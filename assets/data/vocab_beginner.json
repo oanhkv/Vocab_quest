@@ -1,0 +1,202 @@
+[
+  {
+    "id": "b001",
+    "word": "Apple",
+    "meaning": "Quả táo",
+    "pronunciation": "/ˈæp.əl/",
+    "image": "🍎",
+    "example": "I eat an apple every day.",
+    "category": "food",
+    "level": "beginner"
+  },
+  {
+    "id": "b002",
+    "word": "Book",
+    "meaning": "Quyển sách",
+    "pronunciation": "/bʊk/",
+    "image": "📚",
+    "example": "This book is interesting.",
+    "category": "school",
+    "level": "beginner"
+  },
+  {
+    "id": "b003",
+    "word": "Cat",
+    "meaning": "Con mèo",
+    "pronunciation": "/kæt/",
+    "image": "🐱",
+    "example": "My cat is very cute.",
+    "category": "animal",
+    "level": "beginner"
+  },
+  {
+    "id": "b004",
+    "word": "Dog",
+    "meaning": "Con chó",
+    "pronunciation": "/dɒɡ/",
+    "image": "🐶",
+    "example": "The dog is barking.",
+    "category": "animal",
+    "level": "beginner"
+  },
+  {
+    "id": "b005",
+    "word": "House",
+    "meaning": "Ngôi nhà",
+    "pronunciation": "/haʊs/",
+    "image": "🏠",
+    "example": "My house is big.",
+    "category": "place",
+    "level": "beginner"
+  },
+  {
+    "id": "b006",
+    "word": "Car",
+    "meaning": "Xe hơi",
+    "pronunciation": "/kɑːr/",
+    "image": "🚗",
+    "example": "The car is red.",
+    "category": "transport",
+    "level": "beginner"
+  },
+  {
+    "id": "b007",
+    "word": "Sun",
+    "meaning": "Mặt trời",
+    "pronunciation": "/sʌn/",
+    "image": "☀️",
+    "example": "The sun is bright today.",
+    "category": "nature",
+    "level": "beginner"
+  },
+  {
+    "id": "b008",
+    "word": "Moon",
+    "meaning": "Mặt trăng",
+    "pronunciation": "/muːn/",
+    "image": "🌙",
+    "example": "The moon is beautiful tonight.",
+    "category": "nature",
+    "level": "beginner"
+  },
+  {
+    "id": "b009",
+    "word": "Water",
+    "meaning": "Nước",
+    "pronunciation": "/ˈwɔː.tər/",
+    "image": "💧",
+    "example": "Drink plenty of water.",
+    "category": "nature",
+    "level": "beginner"
+  },
+  {
+    "id": "b010",
+    "word": "Fire",
+    "meaning": "Lửa",
+    "pronunciation": "/faɪər/",
+    "image": "🔥",
+    "example": "Be careful with fire.",
+    "category": "nature",
+    "level": "beginner"
+  },
+  {
+    "id": "b011",
+    "word": "Fish",
+    "meaning": "Con cá",
+    "pronunciation": "/fɪʃ/",
+    "image": "🐟",
+    "example": "Fish live in water.",
+    "category": "animal",
+    "level": "beginner"
+  },
+  {
+    "id": "b012",
+    "word": "Bird",
+    "meaning": "Con chim",
+    "pronunciation": "/bɜːrd/",
+    "image": "🐦",
+    "example": "Birds can fly.",
+    "category": "animal",
+    "level": "beginner"
+  },
+  {
+    "id": "b013",
+    "word": "Flower",
+    "meaning": "Bông hoa",
+    "pronunciation": "/ˈflaʊ.ər/",
+    "image": "🌸",
+    "example": "The flower smells nice.",
+    "category": "nature",
+    "level": "beginner"
+  },
+  {
+    "id": "b014",
+    "word": "Tree",
+    "meaning": "Cái cây",
+    "pronunciation": "/triː/",
+    "image": "🌳",
+    "example": "The tree is tall.",
+    "category": "nature",
+    "level": "beginner"
+  },
+  {
+    "id": "b015",
+    "word": "Milk",
+    "meaning": "Sữa",
+    "pronunciation": "/mɪlk/",
+    "image": "🥛",
+    "example": "I drink milk every morning.",
+    "category": "food",
+    "level": "beginner"
+  },
+  {
+    "id": "b016",
+    "word": "Bread",
+    "meaning": "Bánh mì",
+    "pronunciation": "/brɛd/",
+    "image": "🍞",
+    "example": "Fresh bread is delicious.",
+    "category": "food",
+    "level": "beginner"
+  },
+  {
+    "id": "b017",
+    "word": "Hand",
+    "meaning": "Bàn tay",
+    "pronunciation": "/hænd/",
+    "image": "✋",
+    "example": "Wash your hands.",
+    "category": "body",
+    "level": "beginner"
+  },
+  {
+    "id": "b018",
+    "word": "Eye",
+    "meaning": "Con mắt",
+    "pronunciation": "/aɪ/",
+    "image": "👁️",
+    "example": "She has blue eyes.",
+    "category": "body",
+    "level": "beginner"
+  },
+  {
+    "id": "b019",
+    "word": "Star",
+    "meaning": "Ngôi sao",
+    "pronunciation": "/stɑːr/",
+    "image": "⭐",
+    "example": "Stars shine at night.",
+    "category": "nature",
+    "level": "beginner"
+  },
+  {
+    "id": "b020",
+    "word": "Heart",
+    "meaning": "Trái tim",
+    "pronunciation": "/hɑːrt/",
+    "image": "❤️",
+    "example": "I love you with all my heart.",
+    "category": "body",
+    "level": "beginner"
+  }
+]

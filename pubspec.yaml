@@ -1,0 +1,58 @@
+name: vocab_quest
+description: App học từ vựng tiếng Anh qua mini game - Flutter + Firebase
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+  # Firebase
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.15.3
+  cloud_firestore: ^4.13.6
+  firebase_storage: ^11.5.6
+
+  # State management
+  provider: ^6.1.1
+
+  # Local storage
+  shared_preferences: ^2.2.2
+
+  # Icons đẹp (MIỄN PHÍ)
+  font_awesome_flutter: ^10.6.0     # Icon Font Awesome
+  lucide_icons: ^0.257.0             # Icon Lucide (đẹp, hiện đại)
+
+  # UI & Animation
+  google_fonts: ^6.1.0               # Font Google miễn phí
+  flutter_svg: ^2.0.9
+  lottie: ^2.7.0                     # Animation Lottie miễn phí
+  cached_network_image: ^3.3.0
+  percent_indicator: ^4.2.3
+  confetti: ^0.7.0                   # Hiệu ứng ăn mừng
+  flutter_animate: ^4.3.0            # Animation dễ dùng
+  shimmer: ^3.0.0                    # Skeleton loading
+  animated_text_kit: ^4.2.2          # Text animation
+
+  # Audio
+  audioplayers: ^5.2.1
+  flutter_tts: ^3.8.5                # Text-to-Speech phát âm
+
+  # Utils
+  intl: ^0.19.0
+  uuid: ^4.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/data/

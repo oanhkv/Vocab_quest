@@ -1,0 +1,202 @@
+[
+  {
+    "id": "a001",
+    "word": "Perseverance",
+    "meaning": "Sự kiên trì, bền bỉ",
+    "pronunciation": "/ˌpɜː.sɪˈvɪə.rəns/",
+    "image": "💪",
+    "example": "Success requires perseverance.",
+    "category": "abstract",
+    "level": "advanced"
+  },
+  {
+    "id": "a002",
+    "word": "Ambitious",
+    "meaning": "Có tham vọng",
+    "pronunciation": "/æmˈbɪʃ.əs/",
+    "image": "🎯",
+    "example": "She is an ambitious young woman.",
+    "category": "adjective",
+    "level": "advanced"
+  },
+  {
+    "id": "a003",
+    "word": "Entrepreneur",
+    "meaning": "Doanh nhân",
+    "pronunciation": "/ˌɒn.trə.prəˈnɜːr/",
+    "image": "💼",
+    "example": "He became a successful entrepreneur.",
+    "category": "profession",
+    "level": "advanced"
+  },
+  {
+    "id": "a004",
+    "word": "Sophisticated",
+    "meaning": "Tinh tế, phức tạp",
+    "pronunciation": "/səˈfɪs.tɪ.keɪ.tɪd/",
+    "image": "🎩",
+    "example": "The system is very sophisticated.",
+    "category": "adjective",
+    "level": "advanced"
+  },
+  {
+    "id": "a005",
+    "word": "Innovation",
+    "meaning": "Sự đổi mới",
+    "pronunciation": "/ˌɪn.əˈveɪ.ʃən/",
+    "image": "💡",
+    "example": "Technology drives innovation.",
+    "category": "abstract",
+    "level": "advanced"
+  },
+  {
+    "id": "a006",
+    "word": "Philosophy",
+    "meaning": "Triết học, triết lý",
+    "pronunciation": "/fɪˈlɒs.ə.fi/",
+    "image": "📖",
+    "example": "His philosophy of life is simple.",
+    "category": "abstract",
+    "level": "advanced"
+  },
+  {
+    "id": "a007",
+    "word": "Consequence",
+    "meaning": "Hậu quả",
+    "pronunciation": "/ˈkɒn.sɪ.kwəns/",
+    "image": "⚠️",
+    "example": "Every action has a consequence.",
+    "category": "abstract",
+    "level": "advanced"
+  },
+  {
+    "id": "a008",
+    "word": "Accomplish",
+    "meaning": "Hoàn thành, đạt được",
+    "pronunciation": "/əˈkʌm.plɪʃ/",
+    "image": "✅",
+    "example": "She accomplished her goal.",
+    "category": "verb",
+    "level": "advanced"
+  },
+  {
+    "id": "a009",
+    "word": "Diligent",
+    "meaning": "Siêng năng, cần cù",
+    "pronunciation": "/ˈdɪl.ɪ.dʒənt/",
+    "image": "📝",
+    "example": "He is a diligent student.",
+    "category": "adjective",
+    "level": "advanced"
+  },
+  {
+    "id": "a010",
+    "word": "Enthusiasm",
+    "meaning": "Sự nhiệt tình",
+    "pronunciation": "/ɪnˈθjuː.zi.æz.əm/",
+    "image": "🔥",
+    "example": "She works with great enthusiasm.",
+    "category": "emotion",
+    "level": "advanced"
+  },
+  {
+    "id": "a011",
+    "word": "Hypothesis",
+    "meaning": "Giả thuyết",
+    "pronunciation": "/haɪˈpɒθ.ə.sɪs/",
+    "image": "🔬",
+    "example": "Scientists test their hypothesis.",
+    "category": "science",
+    "level": "advanced"
+  },
+  {
+    "id": "a012",
+    "word": "Metamorphosis",
+    "meaning": "Sự biến hóa",
+    "pronunciation": "/ˌmet.əˈmɔː.fə.sɪs/",
+    "image": "🦋",
+    "example": "The caterpillar undergoes metamorphosis.",
+    "category": "biology",
+    "level": "advanced"
+  },
+  {
+    "id": "a013",
+    "word": "Resilient",
+    "meaning": "Kiên cường, dẻo dai",
+    "pronunciation": "/rɪˈzɪl.jənt/",
+    "image": "🛡️",
+    "example": "Children are incredibly resilient.",
+    "category": "adjective",
+    "level": "advanced"
+  },
+  {
+    "id": "a014",
+    "word": "Ubiquitous",
+    "meaning": "Có ở khắp mọi nơi",
+    "pronunciation": "/juːˈbɪk.wɪ.təs/",
+    "image": "🌐",
+    "example": "Smartphones are ubiquitous today.",
+    "category": "adjective",
+    "level": "advanced"
+  },
+  {
+    "id": "a015",
+    "word": "Paradigm",
+    "meaning": "Mô hình, khuôn mẫu",
+    "pronunciation": "/ˈpær.ə.daɪm/",
+    "image": "📊",
+    "example": "This is a new paradigm in education.",
+    "category": "abstract",
+    "level": "advanced"
+  },
+  {
+    "id": "a016",
+    "word": "Nostalgia",
+    "meaning": "Nỗi nhớ quê hương, hoài niệm",
+    "pronunciation": "/nɒsˈtæl.dʒə/",
+    "image": "🕰️",
+    "example": "Old photos fill me with nostalgia.",
+    "category": "emotion",
+    "level": "advanced"
+  },
+  {
+    "id": "a017",
+    "word": "Pragmatic",
+    "meaning": "Thực dụng",
+    "pronunciation": "/præɡˈmæt.ɪk/",
+    "image": "⚖️",
+    "example": "We need a pragmatic approach.",
+    "category": "adjective",
+    "level": "advanced"
+  },
+  {
+    "id": "a018",
+    "word": "Eloquent",
+    "meaning": "Hùng biện, lưu loát",
+    "pronunciation": "/ˈel.ə.kwənt/",
+    "image": "🎤",
+    "example": "She gave an eloquent speech.",
+    "category": "adjective",
+    "level": "advanced"
+  },
+  {
+    "id": "a019",
+    "word": "Tenacious",
+    "meaning": "Kiên định, ngoan cường",
+    "pronunciation": "/təˈneɪ.ʃəs/",
+    "image": "🗿",
+    "example": "He has a tenacious spirit.",
+    "category": "adjective",
+    "level": "advanced"
+  },
+  {
+    "id": "a020",
+    "word": "Serendipity",
+    "meaning": "May mắn tình cờ",
+    "pronunciation": "/ˌser.ənˈdɪp.ə.ti/",
+    "image": "🍀",
+    "example": "Meeting her was pure serendipity.",
+    "category": "abstract",
+    "level": "advanced"
+  }
+]

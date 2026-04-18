@@ -1,0 +1,75 @@
+# Flutter & Dart -------------------------------------------------
+# See: https://github.com/flutter/flutter/blob/master/.gitignore
+
+# Build/Generated files
+/build/
+/.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub/
+/generated/
+.generated/
+pubspec.lock
+
+# Android
+/android/.gradle/
+**/local.properties
+**/.gradle/
+**/captures/
+**/outputs/
+**/generated/
+**/intermediates/
+android/app/*.keystore
+android/key.properties
+android/gradle.properties
+
+# Google services - DO NOT commit sensitive files
+# If you want these tracked, remove the lines below before committing.
+android/app/google-services.json
+ios/GoogleService-Info.plist
+
+# iOS
+/ios/Pods/
+/ios/.symlinks/
+/ios/Flutter/Flutter.framework
+/ios/Flutter/ephemeral/
+/ios/Generated.xcconfig
+/ios/Runner/GeneratedPluginRegistrant.*
+/ios/Runner.xcworkspace/
+
+# Xcode
+*.xcuserstate
+*.xcworkspace
+*.xccheckout
+*.xcscmblueprint
+
+# VS Code/IDE files
+.vscode/
+.idea/
+*.iml
+
+# Misc
+.DS_Store
+*.log
+*.lock
+
+# Native tooling
+**/obj/
+**/bin/
+**/build/
+
+# Windows
+Thumbs.db
+
+# Linux
+*~
+
+# Optional: ignore firebase and secret config examples (uncomment if needed)
+# android/app/google-services.json
+# ios/GoogleService-Info.plist
+
+# Keep IntelliJ/Android Studio run configuration files out
+/.flutter-plugins-deps
+
+# End of file

@@ -1,0 +1,202 @@
+[
+  {
+    "id": "i001",
+    "word": "Adventure",
+    "meaning": "Cuộc phiêu lưu",
+    "pronunciation": "/ədˈven.tʃər/",
+    "image": "🗺️",
+    "example": "We had a great adventure.",
+    "category": "activity",
+    "level": "intermediate"
+  },
+  {
+    "id": "i002",
+    "word": "Knowledge",
+    "meaning": "Kiến thức",
+    "pronunciation": "/ˈnɒl.ɪdʒ/",
+    "image": "🧠",
+    "example": "Knowledge is power.",
+    "category": "abstract",
+    "level": "intermediate"
+  },
+  {
+    "id": "i003",
+    "word": "Journey",
+    "meaning": "Hành trình",
+    "pronunciation": "/ˈdʒɜː.ni/",
+    "image": "🧳",
+    "example": "Life is a journey.",
+    "category": "travel",
+    "level": "intermediate"
+  },
+  {
+    "id": "i004",
+    "word": "Success",
+    "meaning": "Sự thành công",
+    "pronunciation": "/səkˈses/",
+    "image": "🏆",
+    "example": "Hard work leads to success.",
+    "category": "abstract",
+    "level": "intermediate"
+  },
+  {
+    "id": "i005",
+    "word": "Culture",
+    "meaning": "Văn hóa",
+    "pronunciation": "/ˈkʌl.tʃər/",
+    "image": "🎭",
+    "example": "Vietnamese culture is rich.",
+    "category": "society",
+    "level": "intermediate"
+  },
+  {
+    "id": "i006",
+    "word": "Freedom",
+    "meaning": "Tự do",
+    "pronunciation": "/ˈfriː.dəm/",
+    "image": "🕊️",
+    "example": "Everyone deserves freedom.",
+    "category": "abstract",
+    "level": "intermediate"
+  },
+  {
+    "id": "i007",
+    "word": "Music",
+    "meaning": "Âm nhạc",
+    "pronunciation": "/ˈmjuː.zɪk/",
+    "image": "🎵",
+    "example": "Music makes me happy.",
+    "category": "art",
+    "level": "intermediate"
+  },
+  {
+    "id": "i008",
+    "word": "Dream",
+    "meaning": "Giấc mơ / Ước mơ",
+    "pronunciation": "/driːm/",
+    "image": "💭",
+    "example": "Follow your dreams.",
+    "category": "abstract",
+    "level": "intermediate"
+  },
+  {
+    "id": "i009",
+    "word": "Beautiful",
+    "meaning": "Xinh đẹp",
+    "pronunciation": "/ˈbjuː.tɪ.fəl/",
+    "image": "🌺",
+    "example": "The sunset is beautiful.",
+    "category": "adjective",
+    "level": "intermediate"
+  },
+  {
+    "id": "i010",
+    "word": "Discover",
+    "meaning": "Khám phá",
+    "pronunciation": "/dɪˈskʌv.ər/",
+    "image": "🔍",
+    "example": "Let's discover new places.",
+    "category": "verb",
+    "level": "intermediate"
+  },
+  {
+    "id": "i011",
+    "word": "Brilliant",
+    "meaning": "Xuất sắc, thông minh",
+    "pronunciation": "/ˈbrɪl.jənt/",
+    "image": "💡",
+    "example": "What a brilliant idea!",
+    "category": "adjective",
+    "level": "intermediate"
+  },
+  {
+    "id": "i012",
+    "word": "Celebrate",
+    "meaning": "Chúc mừng, kỷ niệm",
+    "pronunciation": "/ˈsel.ə.breɪt/",
+    "image": "🎉",
+    "example": "We celebrate birthdays.",
+    "category": "verb",
+    "level": "intermediate"
+  },
+  {
+    "id": "i013",
+    "word": "Mountain",
+    "meaning": "Ngọn núi",
+    "pronunciation": "/ˈmaʊn.tɪn/",
+    "image": "⛰️",
+    "example": "The mountain is covered in snow.",
+    "category": "nature",
+    "level": "intermediate"
+  },
+  {
+    "id": "i014",
+    "word": "Ocean",
+    "meaning": "Đại dương",
+    "pronunciation": "/ˈəʊ.ʃən/",
+    "image": "🌊",
+    "example": "The ocean is vast.",
+    "category": "nature",
+    "level": "intermediate"
+  },
+  {
+    "id": "i015",
+    "word": "Invent",
+    "meaning": "Phát minh",
+    "pronunciation": "/ɪnˈvent/",
+    "image": "⚙️",
+    "example": "Edison invented the light bulb.",
+    "category": "verb",
+    "level": "intermediate"
+  },
+  {
+    "id": "i016",
+    "word": "Language",
+    "meaning": "Ngôn ngữ",
+    "pronunciation": "/ˈlæŋ.ɡwɪdʒ/",
+    "image": "🗣️",
+    "example": "English is a global language.",
+    "category": "communication",
+    "level": "intermediate"
+  },
+  {
+    "id": "i017",
+    "word": "Future",
+    "meaning": "Tương lai",
+    "pronunciation": "/ˈfjuː.tʃər/",
+    "image": "🚀",
+    "example": "The future is bright.",
+    "category": "time",
+    "level": "intermediate"
+  },
+  {
+    "id": "i018",
+    "word": "Happiness",
+    "meaning": "Hạnh phúc",
+    "pronunciation": "/ˈhæp.i.nəs/",
+    "image": "😊",
+    "example": "Money can't buy happiness.",
+    "category": "emotion",
+    "level": "intermediate"
+  },
+  {
+    "id": "i019",
+    "word": "Opportunity",
+    "meaning": "Cơ hội",
+    "pronunciation": "/ˌɒp.əˈtʃuː.nə.ti/",
+    "image": "🎯",
+    "example": "Don't miss this opportunity.",
+    "category": "abstract",
+    "level": "intermediate"
+  },
+  {
+    "id": "i020",
+    "word": "Growth",
+    "meaning": "Sự phát triển",
+    "pronunciation": "/ɡrəʊθ/",
+    "image": "🌱",
+    "example": "Personal growth is important.",
+    "category": "abstract",
+    "level": "intermediate"
+  }
+]

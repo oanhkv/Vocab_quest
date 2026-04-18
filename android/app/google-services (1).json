@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "172008550404",
+    "project_id": "vocab-quest-21b81",
+    "storage_bucket": "vocab-quest-21b81.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:172008550404:android:a0428b15e4782b13a10551",
+        "android_client_info": {
+          "package_name": "com.apptienganh.vocab_quest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB28Lv5x3NnVg7gae7llA4Zs5bMKg-AVwk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
