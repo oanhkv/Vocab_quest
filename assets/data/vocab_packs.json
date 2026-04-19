@@ -1,0 +1,193 @@
+{
+  "packs": [
+    {
+      "id": "colors",
+      "title": "Colors",
+      "description": "Từ vựng về màu sắc — free",
+      "emoji": "🌈",
+      "gradient": ["#FF6A88", "#FF99AC"],
+      "coinPrice": 0,
+      "level": "beginner",
+      "words": [
+        {"id": "clr1", "word": "Red", "meaning": "Màu đỏ", "pronunciation": "/red/", "image": "🟥", "example": "The apple is red.", "category": "colors", "level": "beginner"},
+        {"id": "clr2", "word": "Blue", "meaning": "Màu xanh dương", "pronunciation": "/bluː/", "image": "🟦", "example": "The sky is blue.", "category": "colors", "level": "beginner"},
+        {"id": "clr3", "word": "Green", "meaning": "Màu xanh lá", "pronunciation": "/ɡriːn/", "image": "🟩", "example": "The grass is green.", "category": "colors", "level": "beginner"},
+        {"id": "clr4", "word": "Yellow", "meaning": "Màu vàng", "pronunciation": "/ˈjeləʊ/", "image": "🟨", "example": "The sun is yellow.", "category": "colors", "level": "beginner"},
+        {"id": "clr5", "word": "Black", "meaning": "Màu đen", "pronunciation": "/blæk/", "image": "⬛", "example": "The cat is black.", "category": "colors", "level": "beginner"},
+        {"id": "clr6", "word": "White", "meaning": "Màu trắng", "pronunciation": "/waɪt/", "image": "⬜", "example": "Snow is white.", "category": "colors", "level": "beginner"},
+        {"id": "clr7", "word": "Orange", "meaning": "Màu cam", "pronunciation": "/ˈɒrɪndʒ/", "image": "🟧", "example": "The orange is orange.", "category": "colors", "level": "beginner"},
+        {"id": "clr8", "word": "Purple", "meaning": "Màu tím", "pronunciation": "/ˈpɜːpl/", "image": "🟪", "example": "I love purple flowers.", "category": "colors", "level": "beginner"},
+        {"id": "clr9", "word": "Pink", "meaning": "Màu hồng", "pronunciation": "/pɪŋk/", "image": "🌸", "example": "She wears a pink dress.", "category": "colors", "level": "beginner"},
+        {"id": "clr10", "word": "Brown", "meaning": "Màu nâu", "pronunciation": "/braʊn/", "image": "🟫", "example": "The bear is brown.", "category": "colors", "level": "beginner"}
+      ]
+    },
+    {
+      "id": "family",
+      "title": "Family",
+      "description": "Từ vựng gia đình — free",
+      "emoji": "👨‍👩‍👧",
+      "gradient": ["#4FACFE", "#00F2FE"],
+      "coinPrice": 0,
+      "level": "beginner",
+      "words": [
+        {"id": "fm1", "word": "Father", "meaning": "Bố", "pronunciation": "/ˈfɑːðər/", "image": "👨", "example": "My father is a doctor.", "category": "family", "level": "beginner"},
+        {"id": "fm2", "word": "Mother", "meaning": "Mẹ", "pronunciation": "/ˈmʌðər/", "image": "👩", "example": "My mother cooks well.", "category": "family", "level": "beginner"},
+        {"id": "fm3", "word": "Brother", "meaning": "Anh/Em trai", "pronunciation": "/ˈbrʌðər/", "image": "👦", "example": "I have one brother.", "category": "family", "level": "beginner"},
+        {"id": "fm4", "word": "Sister", "meaning": "Chị/Em gái", "pronunciation": "/ˈsɪstər/", "image": "👧", "example": "My sister is kind.", "category": "family", "level": "beginner"},
+        {"id": "fm5", "word": "Grandfather", "meaning": "Ông", "pronunciation": "/ˈɡrænfɑːðər/", "image": "👴", "example": "My grandfather is 80.", "category": "family", "level": "beginner"},
+        {"id": "fm6", "word": "Grandmother", "meaning": "Bà", "pronunciation": "/ˈɡrænmʌðər/", "image": "👵", "example": "My grandmother bakes cookies.", "category": "family", "level": "beginner"},
+        {"id": "fm7", "word": "Uncle", "meaning": "Chú/Cậu", "pronunciation": "/ˈʌŋkl/", "image": "🧔", "example": "My uncle lives nearby.", "category": "family", "level": "beginner"},
+        {"id": "fm8", "word": "Aunt", "meaning": "Cô/Dì", "pronunciation": "/ɑːnt/", "image": "👩‍🦰", "example": "My aunt is a teacher.", "category": "family", "level": "beginner"},
+        {"id": "fm9", "word": "Cousin", "meaning": "Anh chị em họ", "pronunciation": "/ˈkʌzn/", "image": "👯", "example": "We are cousins.", "category": "family", "level": "beginner"},
+        {"id": "fm10", "word": "Parents", "meaning": "Bố mẹ", "pronunciation": "/ˈpeərənts/", "image": "👨‍👩‍👦", "example": "I love my parents.", "category": "family", "level": "beginner"}
+      ]
+    },
+    {
+      "id": "weather",
+      "title": "Weather",
+      "description": "Từ vựng thời tiết — free",
+      "emoji": "☀️",
+      "gradient": ["#FEE140", "#FA709A"],
+      "coinPrice": 0,
+      "level": "beginner",
+      "words": [
+        {"id": "wt1", "word": "Sunny", "meaning": "Nắng", "pronunciation": "/ˈsʌni/", "image": "☀️", "example": "It's sunny today.", "category": "weather", "level": "beginner"},
+        {"id": "wt2", "word": "Rainy", "meaning": "Mưa", "pronunciation": "/ˈreɪni/", "image": "🌧️", "example": "It's a rainy day.", "category": "weather", "level": "beginner"},
+        {"id": "wt3", "word": "Cloudy", "meaning": "Nhiều mây", "pronunciation": "/ˈklaʊdi/", "image": "☁️", "example": "The sky is cloudy.", "category": "weather", "level": "beginner"},
+        {"id": "wt4", "word": "Windy", "meaning": "Gió", "pronunciation": "/ˈwɪndi/", "image": "💨", "example": "It's windy outside.", "category": "weather", "level": "beginner"},
+        {"id": "wt5", "word": "Snowy", "meaning": "Tuyết", "pronunciation": "/ˈsnəʊi/", "image": "❄️", "example": "A snowy mountain.", "category": "weather", "level": "beginner"},
+        {"id": "wt6", "word": "Hot", "meaning": "Nóng", "pronunciation": "/hɒt/", "image": "🥵", "example": "It's very hot today.", "category": "weather", "level": "beginner"},
+        {"id": "wt7", "word": "Cold", "meaning": "Lạnh", "pronunciation": "/kəʊld/", "image": "🥶", "example": "It's cold in winter.", "category": "weather", "level": "beginner"},
+        {"id": "wt8", "word": "Storm", "meaning": "Bão", "pronunciation": "/stɔːm/", "image": "⛈️", "example": "A big storm is coming.", "category": "weather", "level": "beginner"},
+        {"id": "wt9", "word": "Fog", "meaning": "Sương mù", "pronunciation": "/fɒɡ/", "image": "🌫️", "example": "The fog is thick.", "category": "weather", "level": "beginner"},
+        {"id": "wt10", "word": "Rainbow", "meaning": "Cầu vồng", "pronunciation": "/ˈreɪnbəʊ/", "image": "🌈", "example": "A rainbow after the rain.", "category": "weather", "level": "beginner"}
+      ]
+    },
+    {
+      "id": "business",
+      "title": "Business English",
+      "description": "Từ vựng văn phòng & kinh doanh",
+      "emoji": "💼",
+      "gradient": ["#4FACFE", "#00F2FE"],
+      "coinPrice": 200,
+      "level": "intermediate",
+      "words": [
+        {"id": "bus1", "word": "Deadline", "meaning": "Hạn chót", "pronunciation": "/ˈdedlaɪn/", "image": "⏰", "example": "The deadline is Friday.", "category": "business", "level": "intermediate"},
+        {"id": "bus2", "word": "Meeting", "meaning": "Cuộc họp", "pronunciation": "/ˈmiːtɪŋ/", "image": "📋", "example": "We have a meeting at 10am.", "category": "business", "level": "intermediate"},
+        {"id": "bus3", "word": "Client", "meaning": "Khách hàng", "pronunciation": "/ˈklaɪənt/", "image": "🤝", "example": "The client is happy with the results.", "category": "business", "level": "intermediate"},
+        {"id": "bus4", "word": "Budget", "meaning": "Ngân sách", "pronunciation": "/ˈbʌdʒɪt/", "image": "💰", "example": "We have a tight budget.", "category": "business", "level": "intermediate"},
+        {"id": "bus5", "word": "Proposal", "meaning": "Đề xuất", "pronunciation": "/prəˈpəʊzl/", "image": "📄", "example": "I'll send the proposal tomorrow.", "category": "business", "level": "intermediate"},
+        {"id": "bus6", "word": "Invoice", "meaning": "Hoá đơn", "pronunciation": "/ˈɪnvɔɪs/", "image": "🧾", "example": "Please pay the invoice by Monday.", "category": "business", "level": "intermediate"},
+        {"id": "bus7", "word": "Contract", "meaning": "Hợp đồng", "pronunciation": "/ˈkɒntrækt/", "image": "📝", "example": "Sign the contract here.", "category": "business", "level": "intermediate"},
+        {"id": "bus8", "word": "Revenue", "meaning": "Doanh thu", "pronunciation": "/ˈrevənjuː/", "image": "📈", "example": "Revenue grew by 20 percent.", "category": "business", "level": "intermediate"},
+        {"id": "bus9", "word": "Colleague", "meaning": "Đồng nghiệp", "pronunciation": "/ˈkɒliːɡ/", "image": "👥", "example": "My colleague helps me a lot.", "category": "business", "level": "intermediate"},
+        {"id": "bus10", "word": "Manager", "meaning": "Quản lý", "pronunciation": "/ˈmænɪdʒər/", "image": "👔", "example": "The manager is on vacation.", "category": "business", "level": "intermediate"}
+      ]
+    },
+    {
+      "id": "travel",
+      "title": "Travel & Tourism",
+      "description": "Từ vựng du lịch khắp thế giới",
+      "emoji": "✈️",
+      "gradient": ["#FA709A", "#FEE140"],
+      "coinPrice": 150,
+      "level": "beginner",
+      "words": [
+        {"id": "trv1", "word": "Passport", "meaning": "Hộ chiếu", "pronunciation": "/ˈpɑːspɔːt/", "image": "🛂", "example": "Don't forget your passport.", "category": "travel", "level": "beginner"},
+        {"id": "trv2", "word": "Luggage", "meaning": "Hành lý", "pronunciation": "/ˈlʌɡɪdʒ/", "image": "🧳", "example": "My luggage is too heavy.", "category": "travel", "level": "beginner"},
+        {"id": "trv3", "word": "Airport", "meaning": "Sân bay", "pronunciation": "/ˈeəpɔːt/", "image": "🛫", "example": "The airport is busy today.", "category": "travel", "level": "beginner"},
+        {"id": "trv4", "word": "Hotel", "meaning": "Khách sạn", "pronunciation": "/həʊˈtel/", "image": "🏨", "example": "We booked a nice hotel.", "category": "travel", "level": "beginner"},
+        {"id": "trv5", "word": "Ticket", "meaning": "Vé", "pronunciation": "/ˈtɪkɪt/", "image": "🎫", "example": "I bought a round-trip ticket.", "category": "travel", "level": "beginner"},
+        {"id": "trv6", "word": "Beach", "meaning": "Bãi biển", "pronunciation": "/biːtʃ/", "image": "🏖️", "example": "The beach is beautiful.", "category": "travel", "level": "beginner"},
+        {"id": "trv7", "word": "Map", "meaning": "Bản đồ", "pronunciation": "/mæp/", "image": "🗺️", "example": "Let me check the map.", "category": "travel", "level": "beginner"},
+        {"id": "trv8", "word": "Tourist", "meaning": "Du khách", "pronunciation": "/ˈtʊərɪst/", "image": "📸", "example": "Many tourists visit every year.", "category": "travel", "level": "beginner"},
+        {"id": "trv9", "word": "Souvenir", "meaning": "Đồ lưu niệm", "pronunciation": "/ˌsuːvəˈnɪər/", "image": "🎁", "example": "I bought a souvenir for my mom.", "category": "travel", "level": "beginner"},
+        {"id": "trv10", "word": "Adventure", "meaning": "Cuộc phiêu lưu", "pronunciation": "/ədˈventʃər/", "image": "🌄", "example": "Travel is an adventure.", "category": "travel", "level": "beginner"}
+      ]
+    },
+    {
+      "id": "food",
+      "title": "Food & Cooking",
+      "description": "Từ vựng ẩm thực & nấu nướng",
+      "emoji": "🍜",
+      "gradient": ["#FF6A88", "#FF99AC"],
+      "coinPrice": 120,
+      "level": "beginner",
+      "words": [
+        {"id": "fd1", "word": "Breakfast", "meaning": "Bữa sáng", "pronunciation": "/ˈbrekfəst/", "image": "🍳", "example": "I eat breakfast at 7.", "category": "food", "level": "beginner"},
+        {"id": "fd2", "word": "Dinner", "meaning": "Bữa tối", "pronunciation": "/ˈdɪnər/", "image": "🍽️", "example": "Dinner is ready.", "category": "food", "level": "beginner"},
+        {"id": "fd3", "word": "Delicious", "meaning": "Ngon", "pronunciation": "/dɪˈlɪʃəs/", "image": "😋", "example": "This cake is delicious!", "category": "food", "level": "beginner"},
+        {"id": "fd4", "word": "Recipe", "meaning": "Công thức", "pronunciation": "/ˈresəpi/", "image": "📖", "example": "Follow the recipe step by step.", "category": "food", "level": "beginner"},
+        {"id": "fd5", "word": "Ingredient", "meaning": "Nguyên liệu", "pronunciation": "/ɪnˈɡriːdiənt/", "image": "🥕", "example": "Fresh ingredients matter.", "category": "food", "level": "beginner"},
+        {"id": "fd6", "word": "Spicy", "meaning": "Cay", "pronunciation": "/ˈspaɪsi/", "image": "🌶️", "example": "I love spicy food.", "category": "food", "level": "beginner"},
+        {"id": "fd7", "word": "Sweet", "meaning": "Ngọt", "pronunciation": "/swiːt/", "image": "🍭", "example": "The dessert is sweet.", "category": "food", "level": "beginner"},
+        {"id": "fd8", "word": "Bitter", "meaning": "Đắng", "pronunciation": "/ˈbɪtər/", "image": "☕", "example": "Coffee tastes bitter.", "category": "food", "level": "beginner"},
+        {"id": "fd9", "word": "Fresh", "meaning": "Tươi", "pronunciation": "/freʃ/", "image": "🥗", "example": "Fresh vegetables are healthy.", "category": "food", "level": "beginner"},
+        {"id": "fd10", "word": "Bake", "meaning": "Nướng (bánh)", "pronunciation": "/beɪk/", "image": "🍰", "example": "I bake a cake every Sunday.", "category": "food", "level": "beginner"}
+      ]
+    },
+    {
+      "id": "technology",
+      "title": "Technology",
+      "description": "Từ vựng công nghệ 4.0",
+      "emoji": "💻",
+      "gradient": ["#667EEA", "#764BA2"],
+      "coinPrice": 250,
+      "level": "advanced",
+      "words": [
+        {"id": "tech1", "word": "Algorithm", "meaning": "Thuật toán", "pronunciation": "/ˈælɡərɪðəm/", "image": "🧮", "example": "This algorithm is very efficient.", "category": "technology", "level": "advanced"},
+        {"id": "tech2", "word": "Database", "meaning": "Cơ sở dữ liệu", "pronunciation": "/ˈdeɪtəbeɪs/", "image": "🗄️", "example": "Store the data in the database.", "category": "technology", "level": "advanced"},
+        {"id": "tech3", "word": "Encryption", "meaning": "Mã hoá", "pronunciation": "/ɪnˈkrɪpʃn/", "image": "🔐", "example": "Encryption protects your data.", "category": "technology", "level": "advanced"},
+        {"id": "tech4", "word": "Cloud", "meaning": "Đám mây", "pronunciation": "/klaʊd/", "image": "☁️", "example": "Files are saved to the cloud.", "category": "technology", "level": "advanced"},
+        {"id": "tech5", "word": "Software", "meaning": "Phần mềm", "pronunciation": "/ˈsɒftweər/", "image": "💾", "example": "Install the latest software.", "category": "technology", "level": "advanced"},
+        {"id": "tech6", "word": "Hardware", "meaning": "Phần cứng", "pronunciation": "/ˈhɑːdweər/", "image": "🖥️", "example": "Upgrade your hardware.", "category": "technology", "level": "advanced"},
+        {"id": "tech7", "word": "Network", "meaning": "Mạng", "pronunciation": "/ˈnetwɜːk/", "image": "🌐", "example": "The network is down.", "category": "technology", "level": "advanced"},
+        {"id": "tech8", "word": "Artificial", "meaning": "Nhân tạo", "pronunciation": "/ˌɑːtɪˈfɪʃl/", "image": "🤖", "example": "Artificial intelligence is amazing.", "category": "technology", "level": "advanced"},
+        {"id": "tech9", "word": "Bandwidth", "meaning": "Băng thông", "pronunciation": "/ˈbændwɪdθ/", "image": "📶", "example": "High bandwidth is needed.", "category": "technology", "level": "advanced"},
+        {"id": "tech10", "word": "Interface", "meaning": "Giao diện", "pronunciation": "/ˈɪntəfeɪs/", "image": "🎛️", "example": "The interface is user-friendly.", "category": "technology", "level": "advanced"}
+      ]
+    },
+    {
+      "id": "sports",
+      "title": "Sports",
+      "description": "Từ vựng thể thao",
+      "emoji": "⚽",
+      "gradient": ["#43E97B", "#38F9D7"],
+      "coinPrice": 100,
+      "level": "beginner",
+      "words": [
+        {"id": "sp1", "word": "Soccer", "meaning": "Bóng đá", "pronunciation": "/ˈsɒkər/", "image": "⚽", "example": "Soccer is the most popular sport.", "category": "sports", "level": "beginner"},
+        {"id": "sp2", "word": "Basketball", "meaning": "Bóng rổ", "pronunciation": "/ˈbɑːskɪtbɔːl/", "image": "🏀", "example": "Let's play basketball.", "category": "sports", "level": "beginner"},
+        {"id": "sp3", "word": "Swimming", "meaning": "Bơi lội", "pronunciation": "/ˈswɪmɪŋ/", "image": "🏊", "example": "Swimming is great exercise.", "category": "sports", "level": "beginner"},
+        {"id": "sp4", "word": "Running", "meaning": "Chạy bộ", "pronunciation": "/ˈrʌnɪŋ/", "image": "🏃", "example": "I go running every morning.", "category": "sports", "level": "beginner"},
+        {"id": "sp5", "word": "Coach", "meaning": "Huấn luyện viên", "pronunciation": "/kəʊtʃ/", "image": "🧑‍🏫", "example": "The coach is very strict.", "category": "sports", "level": "beginner"},
+        {"id": "sp6", "word": "Champion", "meaning": "Nhà vô địch", "pronunciation": "/ˈtʃæmpiən/", "image": "🏆", "example": "She is the world champion.", "category": "sports", "level": "beginner"},
+        {"id": "sp7", "word": "Team", "meaning": "Đội", "pronunciation": "/tiːm/", "image": "👥", "example": "Our team won the match.", "category": "sports", "level": "beginner"},
+        {"id": "sp8", "word": "Goal", "meaning": "Bàn thắng", "pronunciation": "/ɡəʊl/", "image": "🥅", "example": "He scored a great goal.", "category": "sports", "level": "beginner"},
+        {"id": "sp9", "word": "Referee", "meaning": "Trọng tài", "pronunciation": "/ˌrefəˈriː/", "image": "🟨", "example": "The referee blew the whistle.", "category": "sports", "level": "beginner"},
+        {"id": "sp10", "word": "Stadium", "meaning": "Sân vận động", "pronunciation": "/ˈsteɪdiəm/", "image": "🏟️", "example": "The stadium was full.", "category": "sports", "level": "beginner"}
+      ]
+    },
+    {
+      "id": "idioms",
+      "title": "Idioms & Phrases",
+      "description": "Thành ngữ thông dụng",
+      "emoji": "💬",
+      "gradient": ["#F093FB", "#F5576C"],
+      "coinPrice": 300,
+      "level": "advanced",
+      "words": [
+        {"id": "id1", "word": "Break a leg", "meaning": "Chúc may mắn", "pronunciation": "/breɪk ə leɡ/", "image": "🍀", "example": "Break a leg at your audition!", "category": "idiom", "level": "advanced"},
+        {"id": "id2", "word": "Piece of cake", "meaning": "Dễ như ăn bánh", "pronunciation": "/piːs əv keɪk/", "image": "🎂", "example": "The test was a piece of cake.", "category": "idiom", "level": "advanced"},
+        {"id": "id3", "word": "Hit the books", "meaning": "Tập trung học", "pronunciation": "/hɪt ðə bʊks/", "image": "📚", "example": "I need to hit the books tonight.", "category": "idiom", "level": "advanced"},
+        {"id": "id4", "word": "Under the weather", "meaning": "Cảm thấy không khoẻ", "pronunciation": "/ˈʌndər ðə ˈweðər/", "image": "🤒", "example": "I'm feeling under the weather.", "category": "idiom", "level": "advanced"},
+        {"id": "id5", "word": "Spill the beans", "meaning": "Tiết lộ bí mật", "pronunciation": "/spɪl ðə biːnz/", "image": "🫘", "example": "Don't spill the beans!", "category": "idiom", "level": "advanced"},
+        {"id": "id6", "word": "Cost an arm and a leg", "meaning": "Đắt kinh khủng", "pronunciation": "/kɒst ən ɑːm ənd ə leɡ/", "image": "💸", "example": "That car costs an arm and a leg.", "category": "idiom", "level": "advanced"},
+        {"id": "id7", "word": "Hit the nail on the head", "meaning": "Nói trúng ý", "pronunciation": "/hɪt ðə neɪl/", "image": "🎯", "example": "You hit the nail on the head!", "category": "idiom", "level": "advanced"},
+        {"id": "id8", "word": "Once in a blue moon", "meaning": "Rất hiếm khi", "pronunciation": "/wʌns ɪn ə bluː muːn/", "image": "🌙", "example": "I see him once in a blue moon.", "category": "idiom", "level": "advanced"},
+        {"id": "id9", "word": "Bite the bullet", "meaning": "Đối mặt khó khăn", "pronunciation": "/baɪt ðə ˈbʊlɪt/", "image": "💪", "example": "Time to bite the bullet.", "category": "idiom", "level": "advanced"},
+        {"id": "id10", "word": "Break the ice", "meaning": "Phá băng (làm quen)", "pronunciation": "/breɪk ðə aɪs/", "image": "❄️", "example": "A joke helps break the ice.", "category": "idiom", "level": "advanced"}
+      ]
+    }
+  ]
+}
