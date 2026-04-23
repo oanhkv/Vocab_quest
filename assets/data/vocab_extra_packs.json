@@ -1,0 +1,67 @@
+{
+  "packs": [
+    {
+      "id": "healthcare",
+      "title": "Healthcare",
+      "description": "Tu vung suc khoe va benh vien",
+      "emoji": "🩺",
+      "gradient": ["#00C9A7", "#92FE9D"],
+      "coinPrice": 180,
+      "level": "intermediate",
+      "words": [
+        {"id": "hc1", "word": "Doctor", "meaning": "Bac si", "pronunciation": "/ˈdɒktər/", "image": "👨‍⚕️", "example": "The doctor checks my throat.", "category": "healthcare", "level": "intermediate"},
+        {"id": "hc2", "word": "Nurse", "meaning": "Y ta", "pronunciation": "/nɜːs/", "image": "👩‍⚕️", "example": "The nurse gave me medicine.", "category": "healthcare", "level": "intermediate"},
+        {"id": "hc3", "word": "Hospital", "meaning": "Benh vien", "pronunciation": "/ˈhɒspɪtl/", "image": "🏥", "example": "He was taken to hospital.", "category": "healthcare", "level": "intermediate"},
+        {"id": "hc4", "word": "Medicine", "meaning": "Thuoc", "pronunciation": "/ˈmedɪsn/", "image": "💊", "example": "Take this medicine after meals.", "category": "healthcare", "level": "intermediate"},
+        {"id": "hc5", "word": "Injection", "meaning": "Mui tiem", "pronunciation": "/ɪnˈdʒekʃn/", "image": "💉", "example": "I am afraid of injections.", "category": "healthcare", "level": "intermediate"},
+        {"id": "hc6", "word": "Fever", "meaning": "Sot", "pronunciation": "/ˈfiːvər/", "image": "🤒", "example": "She has a high fever.", "category": "healthcare", "level": "intermediate"},
+        {"id": "hc7", "word": "Headache", "meaning": "Dau dau", "pronunciation": "/ˈhedeɪk/", "image": "🤕", "example": "I have a headache today.", "category": "healthcare", "level": "intermediate"},
+        {"id": "hc8", "word": "Patient", "meaning": "Benh nhan", "pronunciation": "/ˈpeɪʃnt/", "image": "🧑", "example": "The patient is recovering.", "category": "healthcare", "level": "intermediate"},
+        {"id": "hc9", "word": "Emergency", "meaning": "Cap cuu", "pronunciation": "/ɪˈmɜːdʒənsi/", "image": "🚑", "example": "Call emergency services now.", "category": "healthcare", "level": "intermediate"},
+        {"id": "hc10", "word": "Recovery", "meaning": "Hoi phuc", "pronunciation": "/rɪˈkʌvəri/", "image": "🌿", "example": "Recovery takes time.", "category": "healthcare", "level": "intermediate"}
+      ]
+    },
+    {
+      "id": "education",
+      "title": "Education",
+      "description": "Tu vung truong hoc va hoc tap",
+      "emoji": "🎓",
+      "gradient": ["#667EEA", "#89F7FE"],
+      "coinPrice": 160,
+      "level": "beginner",
+      "words": [
+        {"id": "edu1", "word": "School", "meaning": "Truong hoc", "pronunciation": "/skuːl/", "image": "🏫", "example": "My school is near my house.", "category": "education", "level": "beginner"},
+        {"id": "edu2", "word": "Student", "meaning": "Hoc sinh", "pronunciation": "/ˈstjuːdnt/", "image": "🧑‍🎓", "example": "She is a diligent student.", "category": "education", "level": "beginner"},
+        {"id": "edu3", "word": "Teacher", "meaning": "Giao vien", "pronunciation": "/ˈtiːtʃər/", "image": "👩‍🏫", "example": "The teacher explains clearly.", "category": "education", "level": "beginner"},
+        {"id": "edu4", "word": "Homework", "meaning": "Bai tap ve nha", "pronunciation": "/ˈhəʊmwɜːk/", "image": "📚", "example": "I finished my homework.", "category": "education", "level": "beginner"},
+        {"id": "edu5", "word": "Exam", "meaning": "Ky thi", "pronunciation": "/ɪɡˈzæm/", "image": "📝", "example": "The exam starts at 8 AM.", "category": "education", "level": "beginner"},
+        {"id": "edu6", "word": "Lesson", "meaning": "Bai hoc", "pronunciation": "/ˈlesn/", "image": "📖", "example": "Today's lesson is interesting.", "category": "education", "level": "beginner"},
+        {"id": "edu7", "word": "Library", "meaning": "Thu vien", "pronunciation": "/ˈlaɪbrəri/", "image": "🏛️", "example": "I borrowed a book from the library.", "category": "education", "level": "beginner"},
+        {"id": "edu8", "word": "Subject", "meaning": "Mon hoc", "pronunciation": "/ˈsʌbdʒɪkt/", "image": "📐", "example": "Math is my favorite subject.", "category": "education", "level": "beginner"},
+        {"id": "edu9", "word": "Classroom", "meaning": "Phong hoc", "pronunciation": "/ˈklɑːsruːm/", "image": "🏷️", "example": "The classroom is clean.", "category": "education", "level": "beginner"},
+        {"id": "edu10", "word": "Scholarship", "meaning": "Hoc bong", "pronunciation": "/ˈskɒləʃɪp/", "image": "🏅", "example": "He won a scholarship.", "category": "education", "level": "beginner"}
+      ]
+    },
+    {
+      "id": "environment",
+      "title": "Environment",
+      "description": "Tu vung moi truong va bao ton",
+      "emoji": "🌍",
+      "gradient": ["#56CCF2", "#2F80ED"],
+      "coinPrice": 220,
+      "level": "advanced",
+      "words": [
+        {"id": "env1", "word": "Pollution", "meaning": "O nhiem", "pronunciation": "/pəˈluːʃn/", "image": "🏭", "example": "Air pollution is a global problem.", "category": "environment", "level": "advanced"},
+        {"id": "env2", "word": "Recycle", "meaning": "Tai che", "pronunciation": "/riːˈsaɪkl/", "image": "♻️", "example": "Please recycle plastic bottles.", "category": "environment", "level": "advanced"},
+        {"id": "env3", "word": "Renewable", "meaning": "Tai tao duoc", "pronunciation": "/rɪˈnjuːəbl/", "image": "🔋", "example": "Solar power is renewable energy.", "category": "environment", "level": "advanced"},
+        {"id": "env4", "word": "Climate", "meaning": "Khi hau", "pronunciation": "/ˈklaɪmət/", "image": "🌤️", "example": "Climate change affects everyone.", "category": "environment", "level": "advanced"},
+        {"id": "env5", "word": "Forest", "meaning": "Rung", "pronunciation": "/ˈfɒrɪst/", "image": "🌲", "example": "This forest is protected.", "category": "environment", "level": "advanced"},
+        {"id": "env6", "word": "Wildlife", "meaning": "Dong vat hoang da", "pronunciation": "/ˈwaɪldlaɪf/", "image": "🦌", "example": "Wildlife habitats are shrinking.", "category": "environment", "level": "advanced"},
+        {"id": "env7", "word": "Conservation", "meaning": "Bao ton", "pronunciation": "/ˌkɒnsəˈveɪʃn/", "image": "🛡️", "example": "Conservation projects need funding.", "category": "environment", "level": "advanced"},
+        {"id": "env8", "word": "Biodiversity", "meaning": "Da dang sinh hoc", "pronunciation": "/ˌbaɪəʊdaɪˈvɜːsəti/", "image": "🧬", "example": "Biodiversity keeps ecosystems healthy.", "category": "environment", "level": "advanced"},
+        {"id": "env9", "word": "Ecosystem", "meaning": "He sinh thai", "pronunciation": "/ˈiːkəʊsɪstəm/", "image": "🌿", "example": "The marine ecosystem is fragile.", "category": "environment", "level": "advanced"},
+        {"id": "env10", "word": "Sustainable", "meaning": "Ben vung", "pronunciation": "/səˈsteɪnəbl/", "image": "✅", "example": "We need sustainable solutions.", "category": "environment", "level": "advanced"}
+      ]
+    }
+  ]
+}
