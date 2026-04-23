@@ -10,8 +10,11 @@ class UserModel {
   final int totalCoins;
   final int totalXP;
   final int level;
-  final int streak;              // Số ngày liên tiếp đăng nhập
-  final int hearts;              // Số tim hiện tại (tối đa 5)
+  final int streak; // Số ngày liên tiếp đăng nhập
+  final int hearts; // Số tim hiện tại (tối đa 5)
+  final List<String> ownedPacks; // các gói từ vựng đã sở hữu
+  final Map<String, int>
+      progress; // key "gameType|packId" -> level cao nhất đã pass (0-3)
   final DateTime? lastPlayedDate;
   final DateTime createdAt;
 
@@ -21,32 +24,49 @@ class UserModel {
     this.displayName = '',
     this.avatarUrl = '',
     this.totalScore = 0,
-    this.totalCoins = 100,       // Thưởng 100 coin khi đăng ký
+    this.totalCoins = 100, // Thưởng 100 coin khi đăng ký
     this.totalXP = 0,
     this.level = 1,
     this.streak = 0,
     this.hearts = 5,
+    List<String>? ownedPacks,
+    Map<String, int>? progress,
     this.lastPlayedDate,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+  })  : ownedPacks =
+            ownedPacks ?? const ['beginner', 'intermediate', 'advanced'],
+        progress = progress ?? <String, int>{},
+        createdAt = createdAt ?? DateTime.now();
 
   /// Chuyển từ Firestore DocumentSnapshot
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     final raw = doc.data();
-    final data = raw is Map
-        ? Map<String, dynamic>.from(raw as Map)
-        : <String, dynamic>{};
+    final data =
+        raw is Map ? Map<String, dynamic>.from(raw) : <String, dynamic>{};
     int asInt(dynamic v, int fallback) {
       if (v is int) return v;
       if (v is num) return v.toInt();
       if (v is String) return int.tryParse(v) ?? fallback;
       return fallback;
     }
+
     String asString(dynamic v) => v is String ? v : (v?.toString() ?? '');
     DateTime? asDate(dynamic v) {
       if (v is Timestamp) return v.toDate();
       if (v is DateTime) return v;
       return null;
+    }
+
+    final rawPacks = data['ownedPacks'];
+    final packs = rawPacks is List
+        ? rawPacks.map((e) => e.toString()).toList()
+        : <String>['beginner', 'intermediate', 'advanced'];
+    final rawProgress = data['progress'];
+    final prog = <String, int>{};
+    if (rawProgress is Map) {
+      rawProgress.forEach((k, v) {
+        prog[k.toString()] = asInt(v, 0);
+      });
     }
     return UserModel(
       uid: doc.id,
@@ -59,6 +79,8 @@ class UserModel {
       level: asInt(data['level'], 1),
       streak: asInt(data['streak'], 0),
       hearts: asInt(data['hearts'], 5),
+      ownedPacks: packs,
+      progress: prog,
       lastPlayedDate: asDate(data['lastPlayedDate']),
       createdAt: asDate(data['createdAt']) ?? DateTime.now(),
     );
@@ -66,19 +88,21 @@ class UserModel {
 
   /// Chuyển sang Map để lưu vào Firestore
   Map<String, dynamic> toMap() => {
-    'email': email,
-    'displayName': displayName,
-    'avatarUrl': avatarUrl,
-    'totalScore': totalScore,
-    'totalCoins': totalCoins,
-    'totalXP': totalXP,
-    'level': level,
-    'streak': streak,
-    'hearts': hearts,
-    'lastPlayedDate':
-    lastPlayedDate != null ? Timestamp.fromDate(lastPlayedDate!) : null,
-    'createdAt': Timestamp.fromDate(createdAt),
-  };
+        'email': email,
+        'displayName': displayName,
+        'avatarUrl': avatarUrl,
+        'totalScore': totalScore,
+        'totalCoins': totalCoins,
+        'totalXP': totalXP,
+        'level': level,
+        'streak': streak,
+        'hearts': hearts,
+        'ownedPacks': ownedPacks,
+        'progress': progress,
+        'lastPlayedDate':
+            lastPlayedDate != null ? Timestamp.fromDate(lastPlayedDate!) : null,
+        'createdAt': Timestamp.fromDate(createdAt),
+      };
 
   /// Copy với các giá trị mới
   UserModel copyWith({
@@ -90,6 +114,8 @@ class UserModel {
     int? level,
     int? streak,
     int? hearts,
+    List<String>? ownedPacks,
+    Map<String, int>? progress,
     DateTime? lastPlayedDate,
   }) {
     return UserModel(
@@ -103,6 +129,8 @@ class UserModel {
       level: level ?? this.level,
       streak: streak ?? this.streak,
       hearts: hearts ?? this.hearts,
+      ownedPacks: ownedPacks ?? this.ownedPacks,
+      progress: progress ?? this.progress,
       lastPlayedDate: lastPlayedDate ?? this.lastPlayedDate,
       createdAt: createdAt,
     );

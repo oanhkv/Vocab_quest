@@ -5,14 +5,14 @@ class GameResultModel {
   final String id;
   final String userId;
   final String userDisplayName;
-  final String gameType;           // matching / quiz / word_puzzle
-  final String level;              // beginner / intermediate / advanced
-  final int score;                 // Điểm số
-  final int correctAnswers;        // Số câu đúng
-  final int totalQuestions;        // Tổng số câu
-  final int timeTakenSeconds;      // Thời gian chơi (giây)
-  final int coinsEarned;           // Số coin nhận được
-  final int xpEarned;              // Số XP nhận được
+  final String gameType; // matching / quiz / word_puzzle
+  final String level; // beginner / intermediate / advanced
+  final int score; // Điểm số
+  final int correctAnswers; // Số câu đúng
+  final int totalQuestions; // Tổng số câu
+  final int timeTakenSeconds; // Thời gian chơi (giây)
+  final int coinsEarned; // Số coin nhận được
+  final int xpEarned; // Số XP nhận được
   final DateTime playedAt;
 
   GameResultModel({
@@ -44,15 +44,15 @@ class GameResultModel {
 
   factory GameResultModel.fromFirestore(DocumentSnapshot doc) {
     final raw = doc.data();
-    final data = raw is Map
-        ? Map<String, dynamic>.from(raw as Map)
-        : <String, dynamic>{};
+    final data =
+        raw is Map ? Map<String, dynamic>.from(raw) : <String, dynamic>{};
     int asInt(dynamic v, int fallback) {
       if (v is int) return v;
       if (v is num) return v.toInt();
       if (v is String) return int.tryParse(v) ?? fallback;
       return fallback;
     }
+
     String asString(dynamic v, [String fallback = '']) =>
         v is String ? v : (v?.toString() ?? fallback);
     return GameResultModel(
@@ -74,18 +74,18 @@ class GameResultModel {
   }
 
   Map<String, dynamic> toMap() => {
-    'userId': userId,
-    'userDisplayName': userDisplayName,
-    'gameType': gameType,
-    'level': level,
-    'score': score,
-    'correctAnswers': correctAnswers,
-    'totalQuestions': totalQuestions,
-    'timeTakenSeconds': timeTakenSeconds,
-    'coinsEarned': coinsEarned,
-    'xpEarned': xpEarned,
-    'playedAt': Timestamp.fromDate(playedAt),
-  };
+        'userId': userId,
+        'userDisplayName': userDisplayName,
+        'gameType': gameType,
+        'level': level,
+        'score': score,
+        'correctAnswers': correctAnswers,
+        'totalQuestions': totalQuestions,
+        'timeTakenSeconds': timeTakenSeconds,
+        'coinsEarned': coinsEarned,
+        'xpEarned': xpEarned,
+        'playedAt': Timestamp.fromDate(playedAt),
+      };
 
   String get gameTypeDisplay {
     switch (gameType) {
