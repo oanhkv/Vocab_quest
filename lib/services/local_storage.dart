@@ -65,6 +65,38 @@ class LocalStorage {
     await prefs.setBool(AppConstants.keyNotificationEnabled, value);
   }
 
+  // Reminder time (daily learning reminder)
+  static Future<int> getReminderHour() async {
+    final prefs = await _instance;
+    return prefs.getInt(AppConstants.keyReminderHour) ?? 20;
+  }
+
+  static Future<void> setReminderHour(int value) async {
+    final prefs = await _instance;
+    await prefs.setInt(AppConstants.keyReminderHour, value);
+  }
+
+  static Future<int> getReminderMinute() async {
+    final prefs = await _instance;
+    return prefs.getInt(AppConstants.keyReminderMinute) ?? 0;
+  }
+
+  static Future<void> setReminderMinute(int value) async {
+    final prefs = await _instance;
+    await prefs.setInt(AppConstants.keyReminderMinute, value);
+  }
+
+  // User rating (0 = chưa đánh giá)
+  static Future<int> getUserRating() async {
+    final prefs = await _instance;
+    return prefs.getInt(AppConstants.keyUserRating) ?? 0;
+  }
+
+  static Future<void> setUserRating(int value) async {
+    final prefs = await _instance;
+    await prefs.setInt(AppConstants.keyUserRating, value);
+  }
+
   // First time
   static Future<bool> getIsFirstTime() async {
     final prefs = await _instance;

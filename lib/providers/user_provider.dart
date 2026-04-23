@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../config/rewards.dart';
+import '../models/level_reward_model.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/firestore_service.dart';
@@ -111,6 +113,76 @@ class UserProvider extends ChangeNotifier {
       totalXP: _user!.totalXP + (addXP ?? 0),
     );
     notifyListeners();
+  }
+
+  /// Key tiến độ dùng chung: "gameType|packId"
+  static String progressKey(String gameType, String packId) =>
+      '$gameType|$packId';
+
+  /// Đọc level cao nhất đã pass trong (gameType, packId). 0 nếu chưa chơi.
+  int getProgress(String gameType, String packId) {
+    if (_user == null) return 0;
+    return _user!.progress[progressKey(gameType, packId)] ?? 0;
+  }
+
+  /// Ghi nhận pass 1 level — chỉ update nếu level mới cao hơn.
+  /// Trả về LevelReward nếu đây là lần đầu pass level này (có thưởng), null nếu không.
+  Future<LevelReward?> recordLevelComplete({
+    required String gameType,
+    required String packId,
+    required int level,
+  }) async {
+    if (_user == null) return null;
+    final key = progressKey(gameType, packId);
+    final current = _user!.progress[key] ?? 0;
+    if (level <= current) return null;
+
+    final reward = LevelRewardConfig.forLevel(level);
+
+    // Update local user ngay — UI hiển thị mượt
+    final newMap = Map<String, int>.from(_user!.progress);
+    newMap[key] = level;
+    _user = _user!.copyWith(
+      progress: newMap,
+      totalCoins: _user!.totalCoins + reward.coins,
+      totalXP: _user!.totalXP + reward.xp,
+    );
+    notifyListeners();
+
+    try {
+      await _firestoreService.updateLevelProgress(
+        uid: _user!.uid,
+        key: key,
+        level: level,
+        coinReward: reward.coins,
+        xpReward: reward.xp,
+      );
+    } catch (_) {
+      // lỗi mạng — giữ state local, sẽ đồng bộ lần refresh kế
+    }
+
+    return reward;
+  }
+
+  /// Mua gói từ vựng — trả về null nếu thành công, lỗi nếu thất bại
+  Future<String?> purchasePack({
+    required String packId,
+    required int price,
+  }) async {
+    if (_user == null) return 'Vui lòng đăng nhập';
+    try {
+      final updated = await _firestoreService.purchasePack(
+        uid: _user!.uid,
+        packId: packId,
+        price: price,
+      );
+      _user = updated;
+      notifyListeners();
+      return null;
+    } catch (e) {
+      final msg = e.toString().replaceFirst('Exception: ', '');
+      return msg;
+    }
   }
 
   void _setLoading(bool value) {
