@@ -1,51 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/design_tokens.dart';
 import '../../config/theme.dart';
 import '../../config/constants.dart';
 import '../../providers/settings_provider.dart';
 import '../../providers/user_provider.dart';
+import '../../services/audio_service.dart';
+import '../../utils/app_localizations.dart';
 import '../../utils/helpers.dart';
+import '../../widgets/bubble_back_button.dart';
 
 /// ⚙️ Màn hình Cài đặt - đầy đủ các tuỳ chọn
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
+  String _t(SettingsProvider s, String key) =>
+      AppLocalizations.tr(s.language, key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 8,
-                ),
-              ],
-            ),
-            child: const Icon(Icons.arrow_back,
-                color: AppColors.textPrimary, size: 20),
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Cài đặt',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+        leading: const BubbleBackButton(),
+        title: Consumer<SettingsProvider>(
+          builder: (context, settings, _) => Text(
+            _t(settings, 'settings_title'),
+            style: AppText.title.copyWith(fontSize: 20),
           ),
         ),
+        centerTitle: true,
       ),
       body: Consumer<SettingsProvider>(
         builder: (context, settings, _) {
@@ -56,63 +45,86 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // === GIAO DIỆN ===
-              _buildSectionTitle('Giao diện', LucideIcons.palette),
-              _buildSettingCard(children: [
+              _buildSectionTitle(
+                  _t(settings, 'section_appearance'), LucideIcons.palette),
+              _buildSettingCard(context, children: [
                 _buildSwitchTile(
                   icon: LucideIcons.moon,
                   iconColor: Colors.indigo,
-                  title: 'Chế độ tối',
-                  subtitle: 'Giao diện thân thiện với mắt',
+                  title: _t(settings, 'dark_mode'),
+                  subtitle: _t(settings, 'dark_mode_sub'),
                   value: settings.isDarkMode,
-                  onChanged: settings.toggleDarkMode,
+                  onChanged: (v) {
+                    _clickFeedback(settings);
+                    settings.toggleDarkMode(v);
+                  },
                 ),
               ]),
               const SizedBox(height: 20),
 
               // === ÂM THANH ===
-              _buildSectionTitle('Âm thanh', LucideIcons.volume2),
-              _buildSettingCard(children: [
+              _buildSectionTitle(
+                  _t(settings, 'section_sound'), LucideIcons.volume2),
+              _buildSettingCard(context, children: [
                 _buildSwitchTile(
                   icon: LucideIcons.volume2,
                   iconColor: Colors.orange,
-                  title: 'Hiệu ứng âm thanh',
-                  subtitle: 'Âm thanh khi chơi game',
+                  title: _t(settings, 'sound_effect'),
+                  subtitle: _t(settings, 'sound_effect_sub'),
                   value: settings.soundEnabled,
-                  onChanged: settings.toggleSound,
+                  onChanged: (v) => settings.toggleSound(v),
                 ),
                 const Divider(height: 1, indent: 72),
                 _buildSwitchTile(
                   icon: LucideIcons.music,
                   iconColor: Colors.purple,
-                  title: 'Nhạc nền',
-                  subtitle: 'Phát nhạc khi mở app',
+                  title: _t(settings, 'bg_music'),
+                  subtitle: _t(settings, 'bg_music_sub'),
                   value: settings.musicEnabled,
-                  onChanged: settings.toggleMusic,
+                  onChanged: (v) {
+                    _clickFeedback(settings);
+                    settings.toggleMusic(v);
+                  },
                 ),
               ]),
               const SizedBox(height: 20),
 
               // === THÔNG BÁO ===
-              _buildSectionTitle('Thông báo', LucideIcons.bell),
-              _buildSettingCard(children: [
+              _buildSectionTitle(
+                  _t(settings, 'section_notification'), LucideIcons.bell),
+              _buildSettingCard(context, children: [
                 _buildSwitchTile(
                   icon: LucideIcons.bell,
                   iconColor: Colors.red,
-                  title: 'Nhắc nhở học tập',
-                  subtitle: 'Nhắc bạn học mỗi ngày',
+                  title: _t(settings, 'notification_reminder'),
+                  subtitle: _t(settings, 'notification_reminder_sub'),
                   value: settings.notificationEnabled,
-                  onChanged: settings.toggleNotification,
+                  onChanged: (v) {
+                    _clickFeedback(settings);
+                    settings.toggleNotification(v);
+                  },
                 ),
+                if (settings.notificationEnabled) ...[
+                  const Divider(height: 1, indent: 72),
+                  _buildActionTile(
+                    icon: LucideIcons.clock,
+                    iconColor: Colors.pink,
+                    title: _t(settings, 'reminder_time'),
+                    subtitle: _formatTime(settings.reminderTime),
+                    onTap: () => _pickReminderTime(context, settings),
+                  ),
+                ],
               ]),
               const SizedBox(height: 20),
 
               // === NGÔN NGỮ ===
-              _buildSectionTitle('Ngôn ngữ', LucideIcons.globe),
-              _buildSettingCard(children: [
+              _buildSectionTitle(
+                  _t(settings, 'section_language'), LucideIcons.globe),
+              _buildSettingCard(context, children: [
                 _buildActionTile(
                   icon: LucideIcons.languages,
                   iconColor: Colors.blue,
-                  title: 'Ngôn ngữ giao diện',
+                  title: _t(settings, 'language_label'),
                   subtitle: _getLanguageName(settings.language),
                   onTap: () => _showLanguagePicker(context, settings),
                 ),
@@ -120,45 +132,47 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 20),
 
               // === VỀ APP ===
-              _buildSectionTitle('Thông tin', LucideIcons.info),
-              _buildSettingCard(children: [
+              _buildSectionTitle(
+                  _t(settings, 'section_info'), LucideIcons.info),
+              _buildSettingCard(context, children: [
                 _buildActionTile(
                   icon: LucideIcons.info,
                   iconColor: Colors.cyan,
-                  title: 'Về ứng dụng',
-                  subtitle: 'Phiên bản ${AppConstants.appVersion}',
-                  onTap: () => _showAboutDialog(context),
+                  title: _t(settings, 'about_app'),
+                  subtitle:
+                      '${_t(settings, 'about_app_sub')} ${AppConstants.appVersion}',
+                  onTap: () => _showAboutDialog(context, settings),
                 ),
                 const Divider(height: 1, indent: 72),
                 _buildActionTile(
                   icon: LucideIcons.star,
                   iconColor: Colors.amber,
-                  title: 'Đánh giá ứng dụng',
-                  subtitle: 'Cho chúng tôi 5 sao nhé!',
-                  onTap: () => Helpers.showSnackBar(
-                      context, 'Cảm ơn bạn đã yêu thích app! 🌟'),
+                  title: _t(settings, 'rate_app'),
+                  subtitle: settings.userRating > 0
+                      ? '⭐ ' * settings.userRating
+                      : _t(settings, 'rate_app_sub'),
+                  onTap: () => _showRatingDialog(context, settings),
                 ),
                 const Divider(height: 1, indent: 72),
                 _buildActionTile(
                   icon: LucideIcons.share2,
                   iconColor: Colors.green,
-                  title: 'Chia sẻ ứng dụng',
-                  subtitle: 'Giới thiệu cho bạn bè',
-                  onTap: () => Helpers.showSnackBar(
-                      context, 'Tính năng đang được phát triển'),
+                  title: _t(settings, 'share_app'),
+                  subtitle: _t(settings, 'share_app_sub'),
+                  onTap: () => _shareApp(context, settings),
                 ),
               ]),
               const SizedBox(height: 32),
 
               // === NÚT ĐĂNG XUẤT ===
-              _buildLogoutButton(context),
+              _buildLogoutButton(context, settings),
               const SizedBox(height: 16),
 
               // Footer
-              const Center(
+              Center(
                 child: Text(
-                  'Made with ❤️ by VocabQuest Team',
-                  style: TextStyle(
+                  _t(settings, 'footer'),
+                  style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.textLight,
                   ),
@@ -170,6 +184,36 @@ class SettingsScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  void _clickFeedback(SettingsProvider settings) {
+    AudioService.instance.playClick();
+  }
+
+  String _formatTime(TimeOfDay t) {
+    final h = t.hour.toString().padLeft(2, '0');
+    final m = t.minute.toString().padLeft(2, '0');
+    return '$h:$m';
+  }
+
+  Future<void> _pickReminderTime(
+      BuildContext context, SettingsProvider settings) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: settings.reminderTime,
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context)
+            .copyWith(alwaysUse24HourFormat: true),
+        child: child!,
+      ),
+    );
+    if (picked != null) {
+      await settings.setReminderTime(picked);
+      if (context.mounted) {
+        Helpers.showSuccess(
+            context, '${_t(settings, 'reminder_time')}: ${_formatTime(picked)}');
+      }
+    }
   }
 
   /// Header hiển thị thông tin user
@@ -201,8 +245,8 @@ class SettingsScreen extends StatelessWidget {
                 backgroundColor: Colors.white,
                 child: Text(
                   (user?.displayName.isNotEmpty == true
-                      ? user!.displayName[0]
-                      : 'U')
+                          ? user!.displayName[0]
+                          : 'U')
                       .toUpperCase(),
                   style: const TextStyle(
                     fontSize: 28,
@@ -298,18 +342,13 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSettingCard({required List<Widget> children}) {
+  Widget _buildSettingCard(BuildContext context,
+      {required List<Widget> children}) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppSizes.radius),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: Theme.of(context).cardTheme.color ?? Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        boxShadow: AppShadow.soft,
       ),
       child: Column(children: children),
     );
@@ -337,7 +376,6 @@ class SettingsScreen extends StatelessWidget {
         style: const TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
         ),
       ),
       subtitle: Text(
@@ -351,7 +389,7 @@ class SettingsScreen extends StatelessWidget {
       onChanged: onChanged,
       activeThumbColor: AppColors.primary,
       contentPadding:
-      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
     );
   }
 
@@ -376,7 +414,6 @@ class SettingsScreen extends StatelessWidget {
         style: const TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
         ),
       ),
       subtitle: Text(
@@ -390,13 +427,13 @@ class SettingsScreen extends StatelessWidget {
           color: AppColors.textLight, size: 22),
       onTap: onTap,
       contentPadding:
-      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
     );
   }
 
-  Widget _buildLogoutButton(BuildContext context) {
+  Widget _buildLogoutButton(BuildContext context, SettingsProvider settings) {
     return InkWell(
-      onTap: () => _confirmLogout(context),
+      onTap: () => _confirmLogout(context, settings),
       borderRadius: BorderRadius.circular(AppSizes.radius),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -404,14 +441,14 @@ class SettingsScreen extends StatelessWidget {
           color: Colors.red.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(AppSizes.radius),
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(LucideIcons.logOut, color: Colors.red, size: 22),
-            SizedBox(width: 12),
+            const Icon(LucideIcons.logOut, color: Colors.red, size: 22),
+            const SizedBox(width: 12),
             Text(
-              'Đăng xuất',
-              style: TextStyle(
+              _t(settings, 'logout'),
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 color: Colors.red,
@@ -439,7 +476,7 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius:
-        BorderRadius.vertical(top: Radius.circular(AppSizes.radiusLarge)),
+            BorderRadius.vertical(top: Radius.circular(AppSizes.radiusLarge)),
       ),
       builder: (_) => Padding(
         padding: const EdgeInsets.all(AppSizes.padding),
@@ -455,9 +492,10 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Chọn ngôn ngữ',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            Text(
+              _t(settings, 'choose_language'),
+              style:
+                  const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 16),
             _languageOption(context, settings, '🇻🇳', 'Tiếng Việt', 'vi'),
@@ -486,7 +524,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showAboutDialog(BuildContext context) {
+  void _showAboutDialog(BuildContext context, SettingsProvider settings) {
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -511,12 +549,12 @@ class SettingsScreen extends StatelessWidget {
               const Text(
                 AppConstants.appName,
                 style:
-                TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                    TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Phiên bản ${AppConstants.appVersion}',
-                style: TextStyle(
+              Text(
+                '${_t(settings, 'about_app_sub')} ${AppConstants.appVersion}',
+                style: const TextStyle(
                     fontSize: 13, color: AppColors.textSecondary),
               ),
               const SizedBox(height: 16),
@@ -529,7 +567,7 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Đóng'),
+                child: Text(_t(settings, 'close')),
               ),
             ],
           ),
@@ -538,18 +576,116 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _confirmLogout(BuildContext context) {
+  void _showRatingDialog(BuildContext context, SettingsProvider settings) {
+    int tempRating = settings.userRating == 0 ? 5 : settings.userRating;
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (ctx, setState) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(LucideIcons.star,
+                        color: Colors.amber, size: 40),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    _t(settings, 'rate_app_dialog_title'),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    _t(settings, 'rate_app_dialog_sub'),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontSize: 13, color: AppColors.textSecondary),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (i) {
+                      final filled = i < tempRating;
+                      return IconButton(
+                        onPressed: () {
+                          setState(() => tempRating = i + 1);
+                          HapticFeedback.selectionClick();
+                        },
+                        icon: Icon(
+                          filled ? Icons.star_rounded : Icons.star_outline_rounded,
+                          color: Colors.amber,
+                          size: 36,
+                        ),
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () => Navigator.pop(dialogContext),
+                          child: Text(_t(settings, 'cancel')),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            await settings.setUserRating(tempRating);
+                            if (!dialogContext.mounted) return;
+                            Navigator.pop(dialogContext);
+                            final msg = _t(settings, 'rate_app_thanks')
+                                .replaceAll('%d', '$tempRating');
+                            Helpers.showSuccess(context, msg);
+                          },
+                          child: Text(_t(settings, 'save')),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _shareApp(
+      BuildContext context, SettingsProvider settings) async {
+    final text = _t(settings, 'share_text');
+    await Clipboard.setData(ClipboardData(text: text));
+    if (context.mounted) {
+      Helpers.showSuccess(context, _t(settings, 'share_copied'));
+    }
+  }
+
+  void _confirmLogout(BuildContext context, SettingsProvider settings) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSizes.radius)),
-        title: const Text('Đăng xuất'),
-        content: const Text('Bạn có chắc muốn đăng xuất không?'),
+        title: Text(_t(settings, 'logout')),
+        content: Text(_t(settings, 'logout_confirm')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            child: Text(_t(settings, 'cancel')),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -561,7 +697,7 @@ class SettingsScreen extends StatelessWidget {
                     context, '/login', (r) => false);
               }
             },
-            child: const Text('Đăng xuất'),
+            child: Text(_t(settings, 'logout')),
           ),
         ],
       ),

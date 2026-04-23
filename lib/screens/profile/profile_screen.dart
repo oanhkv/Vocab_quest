@@ -6,6 +6,7 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/constants.dart';
+import '../../config/design_tokens.dart';
 import '../../config/theme.dart';
 import '../../providers/user_provider.dart';
 import '../../services/firestore_service.dart';
@@ -84,7 +85,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: Consumer<UserProvider>(
         builder: (context, userProvider, _) {
           final user = userProvider.user;
@@ -152,23 +152,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Row(
             children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.pop(context),
-              ),
-              const Spacer(),
-              const Text(
-                'Hồ sơ',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
+              InkWell(
+                onTap: () => Navigator.pop(context),
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.22),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.arrow_back,
+                      color: Colors.white, size: 20),
                 ),
               ),
               const Spacer(),
-              IconButton(
-                icon: const Icon(LucideIcons.settings, color: Colors.white),
-                onPressed: () => Navigator.pushNamed(context, '/settings'),
+              Text(
+                'Hồ sơ',
+                style: AppText.title
+                    .copyWith(color: Colors.white, fontSize: 20),
+              ),
+              const Spacer(),
+              InkWell(
+                onTap: () => Navigator.pushNamed(context, '/settings'),
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.22),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(LucideIcons.settings,
+                      color: Colors.white, size: 20),
+                ),
               ),
             ],
           ),
@@ -231,10 +246,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               Text(
                 user.displayName,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
+                style: AppText.display.copyWith(
                   color: Colors.white,
+                  fontSize: 24,
                 ),
               ),
               const SizedBox(width: 6),
@@ -343,34 +357,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppSizes.radius),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-          ),
-        ],
+        color: Theme.of(context).cardTheme.color ?? Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        boxShadow: AppShadow.soft,
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 24),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 18),
+          ),
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              color: AppColors.textPrimary,
-            ),
+            style: AppText.stat.copyWith(fontSize: 20),
           ),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
-          ),
+          Text(label, style: AppText.caption.copyWith(fontSize: 11)),
         ],
       ),
     );
@@ -378,26 +384,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildGameStatsCard() {
     return Container(
-      padding: const EdgeInsets.all(AppSizes.padding),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppSizes.radius),
+        color: Theme.of(context).cardTheme.color ?? Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        boxShadow: AppShadow.soft,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(LucideIcons.barChart3,
+              const Icon(LucideIcons.barChart3,
                   color: AppColors.primary, size: 20),
-              SizedBox(width: 8),
-              Text(
-                'Thống kê game',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              const SizedBox(width: 8),
+              Text('Thống kê game',
+                  style: AppText.subtitle.copyWith(fontSize: 16)),
             ],
           ),
           const SizedBox(height: 16),
@@ -455,8 +457,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildMenuCard() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppSizes.radius),
+        color: Theme.of(context).cardTheme.color ?? Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        boxShadow: AppShadow.soft,
       ),
       child: Column(
         children: [

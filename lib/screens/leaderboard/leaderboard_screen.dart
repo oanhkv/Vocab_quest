@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/design_tokens.dart';
 import '../../config/theme.dart';
 import '../../models/user_model.dart';
 import '../../providers/user_provider.dart';
@@ -11,15 +12,44 @@ import '../../services/firestore_service.dart';
 import '../../widgets/loading_widget.dart';
 
 // Man hinh Xep hang - hien thi top nguoi choi
-class LeaderboardScreen extends StatelessWidget {
+class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({super.key});
+
+  @override
+  State<LeaderboardScreen> createState() => _LeaderboardScreenState();
+}
+
+class _LeaderboardScreenState extends State<LeaderboardScreen> {
+  final FirestoreService _firestoreService = FirestoreService();
+  bool _rankByXP = false;
+  bool _seeding = false;
+
+  Future<void> _seedDemoData() async {
+    setState(() => _seeding = true);
+    try {
+      await _firestoreService.seedLeaderboardDemoUsers();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Da nap 10 du lieu mau leaderboard')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Nap du lieu that bai: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _seeding = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final currentUser = context.watch<UserProvider>().user;
+    final leaderboardStream = _rankByXP
+        ? _firestoreService.streamLeaderboardByXP()
+        : _firestoreService.streamLeaderboard();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -41,31 +71,67 @@ class LeaderboardScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back,
-                            color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      const Spacer(),
-                      const Text(
-                        'Bang xep hang',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                      InkWell(
+                        onTap: () => Navigator.pop(context),
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.22),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.arrow_back,
+                              color: Colors.white, size: 20),
                         ),
                       ),
                       const Spacer(),
-                      const SizedBox(width: 48),
+                      Text(
+                        'Bảng xếp hạng',
+                        style: AppText.title
+                            .copyWith(color: Colors.white, fontSize: 20),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        tooltip: 'Nap du lieu demo',
+                        onPressed: _seeding ? null : _seedDemoData,
+                        icon: _seeding
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Icon(Icons.cloud_upload_outlined,
+                                color: Colors.white),
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
-                    'Top nguoi choi gioi nhat',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: 13,
+                    'Top 100 nguoi choi gioi nhat',
+                    style: AppText.caption.copyWith(
+                      color: Colors.white.withValues(alpha: 0.95),
+                      fontSize: 12,
                     ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ChoiceChip(
+                        label: const Text('Xep hang diem'),
+                        selected: !_rankByXP,
+                        onSelected: (_) => setState(() => _rankByXP = false),
+                      ),
+                      const SizedBox(width: 8),
+                      ChoiceChip(
+                        label: const Text('Xep hang XP'),
+                        selected: _rankByXP,
+                        onSelected: (_) => setState(() => _rankByXP = true),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -74,7 +140,7 @@ class LeaderboardScreen extends StatelessWidget {
             // Danh sach
             Expanded(
               child: StreamBuilder<List<UserModel>>(
-                stream: FirestoreService().streamLeaderboard(),
+                stream: leaderboardStream,
                 builder: (ctx, snap) {
                   if (snap.connectionState == ConnectionState.waiting) {
                     return const ShimmerList(itemCount: 8);
@@ -91,6 +157,8 @@ class LeaderboardScreen extends StatelessWidget {
 
                   return Column(
                     children: [
+                      if (currentUser != null)
+                        _buildMyRankCard(currentUser.uid, _rankByXP),
                       if (list.length >= 3) _buildPodium(list.take(3).toList()),
                       Expanded(
                         child: ListView.builder(
@@ -100,7 +168,7 @@ class LeaderboardScreen extends StatelessWidget {
                             final u = list[i + 3];
                             final rank = i + 4;
                             final isMe = u.uid == currentUser?.uid;
-                            return _buildRankCard(u, rank, isMe, i);
+                            return _buildRankCard(u, rank, isMe, i, _rankByXP);
                           },
                         ),
                       ),
@@ -112,6 +180,47 @@ class LeaderboardScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildMyRankCard(String uid, bool rankByXP) {
+    final rankFuture = rankByXP
+        ? _firestoreService.getUserRankByXP(uid)
+        : _firestoreService.getUserRankByScore(uid);
+    return FutureBuilder<int?>(
+      future: rankFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Padding(
+            padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: LinearProgressIndicator(minHeight: 3),
+          );
+        }
+        final rank = snapshot.data;
+        if (rank == null) return const SizedBox.shrink();
+        return Container(
+          margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(12),
+            border:
+                Border.all(color: AppColors.primary.withValues(alpha: 0.35)),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.person_pin_circle, color: AppColors.primary),
+              const SizedBox(width: 8),
+              Text(
+                rankByXP
+                    ? 'Hang cua ban theo XP: #$rank'
+                    : 'Hang cua ban theo diem: #$rank',
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -138,7 +247,6 @@ class LeaderboardScreen extends StatelessWidget {
             )
           else
             const Expanded(child: SizedBox()),
-
           Expanded(
             child: _buildPodiumItem(
               user1,
@@ -148,7 +256,6 @@ class LeaderboardScreen extends StatelessWidget {
               icon: FontAwesomeIcons.crown,
             ),
           ),
-
           if (user3 != null)
             Expanded(
               child: _buildPodiumItem(
@@ -167,12 +274,12 @@ class LeaderboardScreen extends StatelessWidget {
   }
 
   Widget _buildPodiumItem(
-      UserModel u, {
-        required int rank,
-        required double height,
-        required Color color,
-        required IconData icon,
-      }) {
+    UserModel u, {
+    required int rank,
+    required double height,
+    required Color color,
+    required IconData icon,
+  }) {
     return Column(
       children: [
         Icon(icon, color: color, size: 24),
@@ -221,8 +328,7 @@ class LeaderboardScreen extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
-            borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(12)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
           ),
           child: Center(
             child: Text(
@@ -239,16 +345,17 @@ class LeaderboardScreen extends StatelessWidget {
     ).animate(delay: (rank * 200).ms).fadeIn().slideY(begin: 0.3, end: 0);
   }
 
-  Widget _buildRankCard(UserModel u, int rank, bool isMe, int index) {
+  Widget _buildRankCard(
+      UserModel u, int rank, bool isMe, int index, bool rankByXP) {
+    final metricValue = rankByXP ? u.totalXP : u.totalScore;
+    final metricLabel = rankByXP ? 'XP' : 'Diem';
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isMe ? AppColors.primary.withValues(alpha: 0.1) : Colors.white,
         borderRadius: BorderRadius.circular(AppSizes.radius),
-        border: isMe
-            ? Border.all(color: AppColors.primary, width: 2)
-            : null,
+        border: isMe ? Border.all(color: AppColors.primary, width: 2) : null,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -340,7 +447,7 @@ class LeaderboardScreen extends StatelessWidget {
                       color: Colors.orange, size: 14),
                   const SizedBox(width: 4),
                   Text(
-                    '${u.totalScore}',
+                    '$metricValue',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -348,6 +455,13 @@ class LeaderboardScreen extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+              Text(
+                metricLabel,
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: AppColors.textSecondary,
+                ),
               ),
             ],
           ),

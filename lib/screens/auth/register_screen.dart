@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/design_tokens.dart';
 import '../../config/theme.dart';
 import '../../providers/user_provider.dart';
 import '../../utils/helpers.dart';
@@ -108,20 +109,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         color: Colors.white,
                       ).animate().scale(
                           duration: 600.ms, curve: Curves.elasticOut),
-                      const SizedBox(height: 16),
-                      const Text(
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
                         'Tạo tài khoản',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
+                        style: AppText.display.copyWith(
                           color: Colors.white,
+                          fontSize: 28,
                         ),
                       ),
+                      const SizedBox(height: 4),
                       Text(
                         'Bắt đầu hành trình học từ vựng',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white.withValues(alpha: 0.9),
+                        style: AppText.caption.copyWith(
+                          color: Colors.white.withValues(alpha: 0.95),
+                          fontSize: 13,
                         ),
                       ),
                     ],

@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/design_tokens.dart';
 import '../../config/theme.dart';
 import '../../providers/user_provider.dart';
 import '../../utils/helpers.dart';
@@ -136,21 +137,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       )
                           .animate()
                           .scale(duration: 600.ms, curve: Curves.elasticOut),
-                      const SizedBox(height: 16),
-                      const Text(
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
                         'Chào mừng trở lại!',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
+                        style: AppText.display.copyWith(
                           color: Colors.white,
+                          fontSize: 28,
                         ),
                       ).animate().fadeIn(delay: 300.ms),
                       const SizedBox(height: 4),
                       Text(
                         'Đăng nhập để tiếp tục học',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white.withValues(alpha: 0.9),
+                        style: AppText.caption.copyWith(
+                          color: Colors.white.withValues(alpha: 0.95),
+                          fontSize: 13,
                         ),
                       ),
                     ],
@@ -176,13 +176,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Đăng nhập',
-                            style: TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
-                            ),
+                            style: AppText.display.copyWith(fontSize: 26),
                           ),
                           const SizedBox(height: 24),
 

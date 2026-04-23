@@ -8,10 +8,13 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/constants.dart';
+import '../../config/design_tokens.dart';
 import '../../config/theme.dart';
 import '../../models/vocab_model.dart';
+import '../../models/level_reward_model.dart';
 import '../../providers/game_provider.dart';
 import '../../providers/user_provider.dart';
+import '../../services/audio_service.dart';
 import '../../services/json_service.dart';
 import '../../widgets/loading_widget.dart';
 import 'game_result_screen.dart';
@@ -19,7 +22,16 @@ import 'game_result_screen.dart';
 /// 🔤 GAME 3: XẾP CHỮ - Xếp các chữ cái thành từ tiếng Anh đúng
 class WordPuzzleGame extends StatefulWidget {
   final String level;
-  const WordPuzzleGame({super.key, required this.level});
+  final List<VocabModel>? words;
+  final String? packId;
+  final int? levelIndex;
+  const WordPuzzleGame({
+    super.key,
+    required this.level,
+    this.words,
+    this.packId,
+    this.levelIndex,
+  });
 
   @override
   State<WordPuzzleGame> createState() => _WordPuzzleGameState();
@@ -45,7 +57,12 @@ class _WordPuzzleGameState extends State<WordPuzzleGame> {
   }
 
   Future<void> _loadGame() async {
-    final all = await JsonService.loadVocab(widget.level);
+    final List<VocabModel> all;
+    if (widget.words != null && widget.words!.isNotEmpty) {
+      all = List<VocabModel>.from(widget.words!);
+    } else {
+      all = await JsonService.loadVocab(widget.level);
+    }
     all.shuffle(Random());
     _words = all.take(AppConstants.puzzleGameWords).toList();
     setState(() {
@@ -113,8 +130,10 @@ class _WordPuzzleGameState extends State<WordPuzzleGame> {
       context.read<GameProvider>()
         ..addCorrect()
         ..addScore(20);
+      AudioService.instance.playCorrect();
     } else {
       context.read<GameProvider>().addWrong();
+      AudioService.instance.playWrong();
     }
 
     Future.delayed(const Duration(milliseconds: 1800), _nextWord);
@@ -146,8 +165,7 @@ class _WordPuzzleGameState extends State<WordPuzzleGame> {
         }
         // Tìm index shuffled chưa dùng, có ký tự đúng
         for (int j = 0; j < _shuffledLetters.length; j++) {
-          if (!_selectedIndexes.contains(j) &&
-              _shuffledLetters[j] == word[i]) {
+          if (!_selectedIndexes.contains(j) && _shuffledLetters[j] == word[i]) {
             setState(() {
               _selectedLetters[i] = _shuffledLetters[j];
               _selectedIndexes.add(j);
@@ -179,22 +197,41 @@ class _WordPuzzleGameState extends State<WordPuzzleGame> {
     if (user == null) return;
 
     final result = await context.read<GameProvider>().finishGame(
-      userId: user.uid,
-      userName: user.displayName,
-      gameType: AppConstants.gameWordPuzzle,
-      level: widget.level,
-    );
+          userId: user.uid,
+          userName: user.displayName,
+          gameType: AppConstants.gameWordPuzzle,
+          level: widget.level,
+        );
 
     if (!mounted) return;
-    context.read<UserProvider>().updateLocalUser(
+    final userProv = context.read<UserProvider>();
+    userProv.updateLocalUser(
       addScore: _score,
       addCoins: result.coinsEarned,
       addXP: result.xpEarned,
     );
+    LevelReward? reward;
+    if (widget.packId != null &&
+        widget.levelIndex != null &&
+        result.stars >= 2) {
+      reward = await userProv.recordLevelComplete(
+        gameType: AppConstants.gameWordPuzzle,
+        packId: widget.packId!,
+        level: widget.levelIndex!,
+      );
+    }
 
+    if (!mounted) return;
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => GameResultScreen(result: result)),
+      MaterialPageRoute(
+        builder: (_) => GameResultScreen(
+          result: result,
+          levelReward: reward,
+          packId: widget.packId,
+          levelIndex: widget.levelIndex,
+        ),
+      ),
     );
   }
 
@@ -209,7 +246,6 @@ class _WordPuzzleGameState extends State<WordPuzzleGame> {
     final vocab = _words[_currentIdx];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -241,32 +277,42 @@ class _WordPuzzleGameState extends State<WordPuzzleGame> {
 
   Widget _buildTopBar() {
     return Padding(
-      padding: const EdgeInsets.all(AppSizes.padding),
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
       child: Row(
         children: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => Navigator.pop(context),
+          InkWell(
+            onTap: () => Navigator.pop(context),
+            borderRadius: BorderRadius.circular(AppRadius.pill),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardTheme.color ?? Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: AppShadow.soft,
+              ),
+              child: Icon(Icons.close,
+                  size: 20, color: Theme.of(context).colorScheme.onSurface),
+            ),
           ),
           const Spacer(),
           Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(20),
+              color: const Color(0xFFFF9800).withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(AppRadius.pill),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(LucideIcons.trophy,
-                    color: Colors.orange, size: 16),
-                const SizedBox(width: 4),
+                    color: Color(0xFFFF9800), size: 16),
+                const SizedBox(width: 6),
                 Text(
                   '$_score',
-                  style: const TextStyle(
-                    color: Colors.orange,
-                    fontWeight: FontWeight.w700,
+                  style: AppText.subtitle.copyWith(
+                    color: const Color(0xFFFF9800),
+                    fontSize: 14,
                   ),
                 ),
               ],
@@ -296,7 +342,7 @@ class _WordPuzzleGameState extends State<WordPuzzleGame> {
             percent: (_currentIdx + 1) / _words.length,
             backgroundColor: Colors.grey.shade200,
             linearGradient:
-            const LinearGradient(colors: AppColors.gradientPink),
+                const LinearGradient(colors: AppColors.gradientPink),
             barRadius: const Radius.circular(8),
             padding: EdgeInsets.zero,
           ),
@@ -369,19 +415,18 @@ class _WordPuzzleGameState extends State<WordPuzzleGame> {
             decoration: BoxDecoration(
               gradient: letter != null
                   ? LinearGradient(
-                colors: isWrong
-                    ? [Colors.red.shade300, Colors.red.shade500]
-                    : isCorrect || !_showResult
-                    ? AppColors.gradientPurple
-                    : AppColors.gradientPurple,
-              )
+                      colors: isWrong
+                          ? [Colors.red.shade300, Colors.red.shade500]
+                          : isCorrect || !_showResult
+                              ? AppColors.gradientPurple
+                              : AppColors.gradientPurple,
+                    )
                   : null,
               color: letter == null ? Colors.white : null,
               borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
               border: Border.all(
-                color: letter == null
-                    ? Colors.grey.shade300
-                    : Colors.transparent,
+                color:
+                    letter == null ? Colors.grey.shade300 : Colors.transparent,
                 width: 2,
               ),
             ),
@@ -426,12 +471,12 @@ class _WordPuzzleGameState extends State<WordPuzzleGame> {
                 boxShadow: isUsed
                     ? []
                     : [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
               ),
               child: Center(
                 child: Text(
@@ -439,9 +484,7 @@ class _WordPuzzleGameState extends State<WordPuzzleGame> {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
-                    color: isUsed
-                        ? Colors.grey
-                        : AppColors.primary,
+                    color: isUsed ? Colors.grey : AppColors.primary,
                   ),
                 ),
               ),
@@ -528,8 +571,8 @@ class _WordPuzzleGameState extends State<WordPuzzleGame> {
         ],
       ),
     ).animate().scale(
-      duration: 400.ms,
-      curve: Curves.elasticOut,
-    );
+          duration: 400.ms,
+          curve: Curves.elasticOut,
+        );
   }
 }

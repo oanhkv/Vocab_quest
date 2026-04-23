@@ -9,10 +9,13 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/constants.dart';
+import '../../config/design_tokens.dart';
 import '../../config/theme.dart';
 import '../../models/vocab_model.dart';
+import '../../models/level_reward_model.dart';
 import '../../providers/game_provider.dart';
 import '../../providers/user_provider.dart';
+import '../../services/audio_service.dart';
 import '../../services/json_service.dart';
 import '../../widgets/loading_widget.dart';
 import 'game_result_screen.dart';
@@ -20,7 +23,16 @@ import 'game_result_screen.dart';
 /// ❓ GAME 2: TRẮC NGHIỆM - Hiển thị từ tiếng Anh, chọn nghĩa đúng trong 4 đáp án
 class QuizGame extends StatefulWidget {
   final String level;
-  const QuizGame({super.key, required this.level});
+  final List<VocabModel>? words;
+  final String? packId;
+  final int? levelIndex;
+  const QuizGame({
+    super.key,
+    required this.level,
+    this.words,
+    this.packId,
+    this.levelIndex,
+  });
 
   @override
   State<QuizGame> createState() => _QuizGameState();
@@ -49,7 +61,11 @@ class _QuizGameState extends State<QuizGame> {
   }
 
   Future<void> _loadGame() async {
-    _allWords = await JsonService.loadVocab(widget.level);
+    if (widget.words != null && widget.words!.isNotEmpty) {
+      _allWords = List<VocabModel>.from(widget.words!);
+    } else {
+      _allWords = await JsonService.loadVocab(widget.level);
+    }
     _allWords.shuffle(Random());
 
     _questions = _allWords.take(AppConstants.quizGameQuestions).toList();
@@ -60,9 +76,7 @@ class _QuizGameState extends State<QuizGame> {
   }
 
   List<VocabModel> _generateOptions(VocabModel correct) {
-    final distractors = _allWords
-        .where((w) => w.id != correct.id)
-        .toList()
+    final distractors = _allWords.where((w) => w.id != correct.id).toList()
       ..shuffle();
     final opts = [correct, ...distractors.take(3)];
     opts.shuffle();
@@ -88,6 +102,7 @@ class _QuizGameState extends State<QuizGame> {
       _selectedAnswer = null;
     });
     context.read<GameProvider>().addWrong();
+    AudioService.instance.playWrong();
     Future.delayed(const Duration(seconds: 2), _nextQuestion);
   }
 
@@ -114,6 +129,11 @@ class _QuizGameState extends State<QuizGame> {
         context.read<GameProvider>().addWrong();
       }
     });
+    if (isCorrect) {
+      AudioService.instance.playCorrect();
+    } else {
+      AudioService.instance.playWrong();
+    }
 
     Future.delayed(const Duration(milliseconds: 1500), _nextQuestion);
   }
@@ -138,22 +158,41 @@ class _QuizGameState extends State<QuizGame> {
     if (user == null) return;
 
     final result = await context.read<GameProvider>().finishGame(
-      userId: user.uid,
-      userName: user.displayName,
-      gameType: AppConstants.gameQuiz,
-      level: widget.level,
-    );
+          userId: user.uid,
+          userName: user.displayName,
+          gameType: AppConstants.gameQuiz,
+          level: widget.level,
+        );
 
     if (!mounted) return;
-    context.read<UserProvider>().updateLocalUser(
+    final userProv = context.read<UserProvider>();
+    userProv.updateLocalUser(
       addScore: _score,
       addCoins: result.coinsEarned,
       addXP: result.xpEarned,
     );
+    LevelReward? reward;
+    if (widget.packId != null &&
+        widget.levelIndex != null &&
+        result.stars >= 2) {
+      reward = await userProv.recordLevelComplete(
+        gameType: AppConstants.gameQuiz,
+        packId: widget.packId!,
+        level: widget.levelIndex!,
+      );
+    }
 
+    if (!mounted) return;
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => GameResultScreen(result: result)),
+      MaterialPageRoute(
+        builder: (_) => GameResultScreen(
+          result: result,
+          levelReward: reward,
+          packId: widget.packId,
+          levelIndex: widget.levelIndex,
+        ),
+      ),
     );
   }
 
@@ -176,7 +215,6 @@ class _QuizGameState extends State<QuizGame> {
     final options = _options[_currentIdx];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -202,34 +240,44 @@ class _QuizGameState extends State<QuizGame> {
   }
 
   Widget _buildTopBar() {
+    final isUrgent = _timeLeftForQuestion <= 5;
     return Padding(
-      padding: const EdgeInsets.all(AppSizes.padding),
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
       child: Row(
         children: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => Navigator.pop(context),
+          _GameChromeBubble(
+            icon: Icons.close,
+            onTap: () => Navigator.pop(context),
           ),
           Expanded(
             child: Center(
               child: Container(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: _timeLeftForQuestion <= 5 ? Colors.red : Colors.blue,
-                  borderRadius: BorderRadius.circular(20),
+                  gradient: LinearGradient(
+                    colors: isUrgent
+                        ? const [Color(0xFFFF5252), Color(0xFFFF1744)]
+                        : AppColors.gradientBlue,
+                  ),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                  boxShadow: AppShadow.colored(
+                    isUrgent ? Colors.red : const Color(0xFF4FACFE),
+                    alpha: 0.35,
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(LucideIcons.timer,
                         color: Colors.white, size: 16),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 6),
                     Text(
                       '${_timeLeftForQuestion}s',
-                      style: const TextStyle(
+                      style: AppText.subtitle.copyWith(
                         color: Colors.white,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
                       ),
                     ),
                   ],
@@ -238,23 +286,22 @@ class _QuizGameState extends State<QuizGame> {
             ),
           ),
           Container(
-            padding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(20),
+              color: const Color(0xFFFF9800).withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(AppRadius.pill),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(LucideIcons.trophy,
-                    color: Colors.orange, size: 16),
-                const SizedBox(width: 4),
+                    color: Color(0xFFFF9800), size: 16),
+                const SizedBox(width: 6),
                 Text(
                   '$_score',
-                  style: const TextStyle(
-                    color: Colors.orange,
-                    fontWeight: FontWeight.w700,
+                  style: AppText.subtitle.copyWith(
+                    color: const Color(0xFFFF9800),
+                    fontSize: 14,
                   ),
                 ),
               ],
@@ -296,8 +343,8 @@ class _QuizGameState extends State<QuizGame> {
             lineHeight: 8,
             percent: (_currentIdx + 1) / _questions.length,
             backgroundColor: Colors.grey.shade200,
-            linearGradient: const LinearGradient(
-                colors: AppColors.gradientPurple),
+            linearGradient:
+                const LinearGradient(colors: AppColors.gradientPurple),
             barRadius: const Radius.circular(8),
             padding: EdgeInsets.zero,
           ),
@@ -338,8 +385,7 @@ class _QuizGameState extends State<QuizGame> {
           if (q.isEmoji)
             Text(q.image, style: const TextStyle(fontSize: 56))
           else
-            const Icon(FontAwesomeIcons.book,
-                color: Colors.white, size: 56),
+            const Icon(FontAwesomeIcons.book, color: Colors.white, size: 56),
           const SizedBox(height: 12),
           Text(
             q.word,
@@ -362,8 +408,7 @@ class _QuizGameState extends State<QuizGame> {
           InkWell(
             onTap: _speak,
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.25),
                 borderRadius: BorderRadius.circular(20),
@@ -467,8 +512,7 @@ class _QuizGameState extends State<QuizGame> {
                     ),
                   ),
                 ),
-                if (icon != null)
-                  Icon(icon, color: borderColor, size: 22),
+                if (icon != null) Icon(icon, color: borderColor, size: 22),
               ],
             ),
           ),
@@ -478,5 +522,30 @@ class _QuizGameState extends State<QuizGame> {
           .fadeIn(duration: 300.ms)
           .slideX(begin: 0.1, end: 0);
     });
+  }
+}
+
+/// Nút close tròn có shadow — dùng chung cho top bar 3 game
+class _GameChromeBubble extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _GameChromeBubble({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadius.pill),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardTheme.color ?? Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: AppShadow.soft,
+        ),
+        child: Icon(icon,
+            size: 20, color: Theme.of(context).colorScheme.onSurface),
+      ),
+    );
   }
 }

@@ -4,11 +4,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/design_tokens.dart';
 import '../../config/theme.dart';
 import '../../models/game_result_model.dart';
 import '../../providers/user_provider.dart';
 import '../../services/firestore_service.dart';
 import '../../utils/helpers.dart';
+import '../../widgets/bubble_back_button.dart';
 import '../../widgets/loading_widget.dart';
 
 /// 📜 Màn hình lịch sử chơi game
@@ -20,28 +22,10 @@ class HistoryScreen extends StatelessWidget {
     final user = context.watch<UserProvider>().user;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
-        leading: IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.arrow_back,
-                color: AppColors.textPrimary, size: 20),
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Lịch sử chơi',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
-        ),
+        leading: const BubbleBackButton(),
+        title: Text('Lịch sử chơi', style: AppText.title.copyWith(fontSize: 20)),
+        centerTitle: true,
       ),
       body: user == null
           ? const EmptyState(
@@ -52,8 +36,17 @@ class HistoryScreen extends StatelessWidget {
           : StreamBuilder<List<GameResultModel>>(
         stream: FirestoreService().streamUserHistory(user.uid),
         builder: (ctx, snap) {
-          if (snap.connectionState == ConnectionState.waiting) {
+          if (snap.connectionState == ConnectionState.waiting &&
+              !snap.hasData) {
             return const ShimmerList(itemCount: 6);
+          }
+
+          if (snap.hasError) {
+            return EmptyState(
+              icon: LucideIcons.alertCircle,
+              title: 'Không tải được lịch sử',
+              subtitle: 'Lỗi: ${snap.error}',
+            );
           }
 
           final list = snap.data ?? [];
@@ -98,18 +91,12 @@ class HistoryScreen extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(AppSizes.padding),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(AppSizes.radius),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        boxShadow: AppShadow.soft,
       ),
       child: Row(
         children: [
