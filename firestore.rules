@@ -10,9 +10,14 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    // Cho phep ghi cac document demo de phuc vu man hinh leaderboard trong moi truong hoc tap/demo.
+    function isDemoUserDoc(userId) {
+      return userId.matches('^demo_u[0-9]{3}$');
+    }
+
     match /users/{userId} {
       allow read: if isAuthenticated();
-      allow create, update: if isOwner(userId);
+      allow create, update: if isOwner(userId) || (isAuthenticated() && isDemoUserDoc(userId));
       allow delete: if false;
     }
 
