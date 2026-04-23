@@ -8,6 +8,7 @@ import 'config/theme.dart';
 import 'providers/user_provider.dart';
 import 'providers/settings_provider.dart';
 import 'providers/game_provider.dart';
+import 'services/audio_service.dart';
 
 import 'screens/splash_screen.dart';
 import 'screens/auth/login_screen.dart';
@@ -18,6 +19,7 @@ import 'screens/history/history_screen.dart';
 import 'screens/leaderboard/leaderboard_screen.dart';
 import 'screens/profile/profile_screen.dart';
 import 'screens/settings/settings_screen.dart';
+import 'screens/shop/shop_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +40,14 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Khởi tạo dịch vụ âm thanh (đọc settings + phát nhạc nền nếu bật).
+  // Bọc try/catch để lỗi audio không chặn app khởi động.
+  try {
+    await AudioService.instance.init();
+  } catch (_) {
+    // audio init fail — app vẫn chạy bình thường, chỉ không có âm thanh
+  }
 
   runApp(const VocabQuestApp());
 }
@@ -79,6 +89,7 @@ class VocabQuestApp extends StatelessWidget {
               '/leaderboard': (_) => const LeaderboardScreen(),
               '/profile': (_) => const ProfileScreen(),
               '/settings': (_) => const SettingsScreen(),
+              '/shop': (_) => const ShopScreen(),
             },
           );
         },

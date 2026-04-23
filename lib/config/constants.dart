@@ -16,6 +16,9 @@ class AppConstants {
   static const String keyMusicEnabled = 'musicEnabled';
   static const String keyLanguage = 'language';
   static const String keyNotificationEnabled = 'notificationEnabled';
+  static const String keyReminderHour = 'reminderHour';
+  static const String keyReminderMinute = 'reminderMinute';
+  static const String keyUserRating = 'userRating';
   static const String keyIsFirstTime = 'isFirstTime';
 
   // Game types
