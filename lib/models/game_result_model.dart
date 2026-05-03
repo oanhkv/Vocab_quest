@@ -95,6 +95,8 @@ class GameResultModel {
         return 'Trắc nghiệm';
       case 'word_puzzle':
         return 'Xếp chữ';
+      case 'memory':
+        return 'Lật thẻ';
       default:
         return gameType;
     }

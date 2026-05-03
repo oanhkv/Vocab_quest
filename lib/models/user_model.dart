@@ -10,7 +10,8 @@ class UserModel {
   final int totalCoins;
   final int totalXP;
   final int level;
-  final int streak; // Số ngày liên tiếp đăng nhập
+  final int streak; // Số ngày liên tiếp học (hiện tại)
+  final int longestStreak; // Streak cao nhất từng đạt
   final int hearts; // Số tim hiện tại (tối đa 5)
   final List<String> ownedPacks; // các gói từ vựng đã sở hữu
   final Map<String, int>
@@ -28,6 +29,7 @@ class UserModel {
     this.totalXP = 0,
     this.level = 1,
     this.streak = 0,
+    this.longestStreak = 0,
     this.hearts = 5,
     List<String>? ownedPacks,
     Map<String, int>? progress,
@@ -78,6 +80,7 @@ class UserModel {
       totalXP: asInt(data['totalXP'], 0),
       level: asInt(data['level'], 1),
       streak: asInt(data['streak'], 0),
+      longestStreak: asInt(data['longestStreak'], 0),
       hearts: asInt(data['hearts'], 5),
       ownedPacks: packs,
       progress: prog,
@@ -96,6 +99,7 @@ class UserModel {
         'totalXP': totalXP,
         'level': level,
         'streak': streak,
+        'longestStreak': longestStreak,
         'hearts': hearts,
         'ownedPacks': ownedPacks,
         'progress': progress,
@@ -113,6 +117,7 @@ class UserModel {
     int? totalXP,
     int? level,
     int? streak,
+    int? longestStreak,
     int? hearts,
     List<String>? ownedPacks,
     Map<String, int>? progress,
@@ -128,6 +133,7 @@ class UserModel {
       totalXP: totalXP ?? this.totalXP,
       level: level ?? this.level,
       streak: streak ?? this.streak,
+      longestStreak: longestStreak ?? this.longestStreak,
       hearts: hearts ?? this.hearts,
       ownedPacks: ownedPacks ?? this.ownedPacks,
       progress: progress ?? this.progress,
