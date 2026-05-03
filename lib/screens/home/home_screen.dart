@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 import '../../config/design_tokens.dart';
 import '../../config/theme.dart';
 import '../../providers/user_provider.dart';
+import '../../utils/app_localizations.dart';
+import '../../widgets/user_avatar.dart';
 
 /// 🏠 Home — redesign D1: hero greeting, stats, big action tiles
 class HomeScreen extends StatelessWidget {
@@ -31,11 +33,13 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: AppSpacing.lg),
               _buildDailyBanner(context),
               const SizedBox(height: AppSpacing.lg),
-              _buildSectionTitle('Chơi ngay', LucideIcons.gamepad2),
+              _buildSectionTitle(
+                  context.t('home_action_play'), LucideIcons.gamepad2),
               const SizedBox(height: AppSpacing.sm),
               _buildMainActions(context),
               const SizedBox(height: AppSpacing.lg),
-              _buildSectionTitle('Khám phá', LucideIcons.compass),
+              _buildSectionTitle(
+                  context.t('home_action_explore'), LucideIcons.compass),
               const SizedBox(height: AppSpacing.sm),
               _buildShortcutsRow(context),
             ],
@@ -60,19 +64,10 @@ class HomeScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: AppShadow.colored(AppColors.primary, alpha: 0.25),
               ),
-              child: CircleAvatar(
+              child: UserAvatar(
+                avatarUrl: user?.avatarUrl ?? '',
+                displayName: user?.displayName ?? '',
                 radius: 28,
-                backgroundColor: Colors.white,
-                child: Text(
-                  (user?.displayName.isNotEmpty == true
-                          ? user!.displayName[0]
-                          : 'U')
-                      .toUpperCase(),
-                  style: AppText.title.copyWith(
-                    color: AppColors.primary,
-                    fontSize: 24,
-                  ),
-                ),
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -81,7 +76,7 @@ class HomeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Xin chào 👋',
+                    context.t('home_hello'),
                     style: AppText.caption.copyWith(
                       fontSize: 13,
                     ),
@@ -90,7 +85,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     user?.displayName.isNotEmpty == true
                         ? user!.displayName
-                        : 'Học viên mới',
+                        : context.t('home_welcome_new'),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppText.title.copyWith(fontSize: 22),
@@ -133,7 +128,7 @@ class HomeScreen extends StatelessWidget {
                 child: _StatItem(
                   icon: FontAwesomeIcons.trophy,
                   iconColor: const Color(0xFFFFB300),
-                  label: 'Điểm',
+                  label: context.t('home_stat_score'),
                   value: '${user?.totalScore ?? 0}',
                 ),
               ),
@@ -145,7 +140,7 @@ class HomeScreen extends StatelessWidget {
                   child: _StatItem(
                     icon: FontAwesomeIcons.coins,
                     iconColor: const Color(0xFFFF9800),
-                    label: 'Coin',
+                    label: context.t('home_stat_coin'),
                     value: '${user?.totalCoins ?? 0}',
                     tappable: true,
                   ),
@@ -156,7 +151,7 @@ class HomeScreen extends StatelessWidget {
                 child: _StatItem(
                   icon: FontAwesomeIcons.bolt,
                   iconColor: const Color(0xFF2196F3),
-                  label: 'XP',
+                  label: context.t('home_stat_xp'),
                   value: '${user?.totalXP ?? 0}',
                 ),
               ),
@@ -229,7 +224,7 @@ class HomeScreen extends StatelessWidget {
                                 const Icon(LucideIcons.flame,
                                     color: Colors.white, size: 13),
                                 const SizedBox(width: 4),
-                                Text('THỬ THÁCH HÔM NAY',
+                                Text(context.t('home_challenge_today'),
                                     style: AppText.overline.copyWith(
                                       color: Colors.white,
                                       fontSize: 10,
@@ -239,7 +234,9 @@ class HomeScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: AppSpacing.sm),
                           Text(
-                            'Học $dailyGoal XP\nđể giữ streak',
+                            context
+                                .t('home_challenge_sub')
+                                .replaceFirst('%d', '$dailyGoal'),
                             style: AppText.title.copyWith(
                               color: Colors.white,
                               fontSize: 22,
@@ -300,29 +297,29 @@ class HomeScreen extends StatelessWidget {
     final tiles = [
       _ActionTileData(
         emoji: '🎮',
-        title: 'Mini Game',
-        subtitle: '3 loại game',
+        title: context.t('gm_title'),
+        subtitle: context.t('home_action_play_sub'),
         gradient: AppColors.gradientPurple,
         route: '/games',
       ),
       _ActionTileData(
         emoji: '🏆',
-        title: 'Xếp hạng',
-        subtitle: 'Top 100',
+        title: context.t('home_action_ranking'),
+        subtitle: context.t('home_action_ranking_sub'),
         gradient: AppColors.gradientOrange,
         route: '/leaderboard',
       ),
       _ActionTileData(
         emoji: '📜',
-        title: 'Lịch sử',
-        subtitle: 'Lần chơi gần',
+        title: context.t('home_action_history'),
+        subtitle: context.t('home_action_history_sub'),
         gradient: AppColors.gradientGreen,
         route: '/history',
       ),
       _ActionTileData(
         emoji: '🛍️',
-        title: 'Cửa hàng',
-        subtitle: 'Mua gói từ vựng',
+        title: context.t('home_action_shop'),
+        subtitle: context.t('home_action_shop_sub'),
         gradient: const [Color(0xFFFA709A), Color(0xFFFEE140)],
         route: '/shop',
       ),
@@ -352,24 +349,24 @@ class HomeScreen extends StatelessWidget {
     final shortcuts = [
       _ShortcutData(
           icon: LucideIcons.user,
-          label: 'Hồ sơ',
+          label: context.t('home_shortcut_profile'),
           color: const Color(0xFF5C6BC0),
           route: '/profile'),
       _ShortcutData(
           icon: LucideIcons.settings,
-          label: 'Cài đặt',
+          label: context.t('home_shortcut_settings'),
           color: const Color(0xFF78909C),
           route: '/settings'),
       _ShortcutData(
           icon: LucideIcons.award,
-          label: 'Huy hiệu',
+          label: context.t('home_shortcut_badges'),
           color: const Color(0xFFFFB300),
           route: null),
       _ShortcutData(
-          icon: LucideIcons.bookmark,
-          label: 'Đã lưu',
+          icon: LucideIcons.heart,
+          label: context.t('home_shortcut_saved'),
           color: const Color(0xFFEC407A),
-          route: null),
+          route: '/favorites'),
     ];
     return Row(
       children: shortcuts.asMap().entries.map((e) {

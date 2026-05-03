@@ -10,7 +10,9 @@ import '../../config/design_tokens.dart';
 import '../../config/theme.dart';
 import '../../providers/user_provider.dart';
 import '../../services/firestore_service.dart';
-import '../../utils/helpers.dart';
+import '../../utils/app_localizations.dart';
+import '../../widgets/user_avatar.dart';
+import 'edit_profile_screen.dart';
 
 /// 👤 Màn hình hồ sơ cá nhân
 class ProfileScreen extends StatefulWidget {
@@ -42,43 +44,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _editName() {
-    final user = context.read<UserProvider>().user;
-    if (user == null) return;
-    final ctrl = TextEditingController(text: user.displayName);
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.radius)),
-        title: const Text('Đổi tên'),
-        content: TextField(
-          controller: ctrl,
-          decoration: const InputDecoration(
-            labelText: 'Tên hiển thị',
-            prefixIcon: Icon(LucideIcons.user),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (ctrl.text.trim().isEmpty) return;
-              await context
-                  .read<UserProvider>()
-                  .updateDisplayName(ctrl.text.trim());
-              if (!mounted) return;
-              Navigator.pop(context);
-              Helpers.showSuccess(context, 'Đã cập nhật');
-            },
-            child: const Text('Lưu'),
-          ),
-        ],
-      ),
+  void _openEditProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const EditProfileScreen()),
     );
   }
 
@@ -89,7 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (context, userProvider, _) {
           final user = userProvider.user;
           if (user == null) {
-            return const Center(child: Text('Vui lòng đăng nhập'));
+            return Center(child: Text(context.t('profile_please_login')));
           }
 
           final currentLv = LevelSystem.getLevelFromXP(user.totalXP);
@@ -167,7 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const Spacer(),
               Text(
-                'Hồ sơ',
+                context.t('profile_title'),
                 style: AppText.title
                     .copyWith(color: Colors.white, fontSize: 20),
               ),
@@ -198,19 +167,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 3),
                 ),
-                child: CircleAvatar(
+                child: UserAvatar(
+                  avatarUrl: user.avatarUrl,
+                  displayName: user.displayName,
                   radius: 45,
-                  backgroundColor: Colors.white,
-                  child: Text(
-                    user.displayName.isNotEmpty
-                        ? user.displayName[0].toUpperCase()
-                        : 'U',
-                    style: const TextStyle(
-                      fontSize: 42,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.primary,
-                    ),
-                  ),
                 ),
               ),
               Positioned(
@@ -253,7 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(width: 6),
               InkWell(
-                onTap: _editName,
+                onTap: _openEditProfile,
                 child: const Icon(LucideIcons.edit,
                     color: Colors.white70, size: 18),
               ),
@@ -322,7 +282,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: _statCard(
             icon: FontAwesomeIcons.trophy,
             value: '${user.totalScore}',
-            label: 'Điểm',
+            label: context.t('home_stat_score'),
             color: Colors.orange,
           ),
         ),
@@ -331,7 +291,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: _statCard(
             icon: FontAwesomeIcons.coins,
             value: '${user.totalCoins}',
-            label: 'Coin',
+            label: context.t('home_stat_coin'),
             color: Colors.amber,
           ),
         ),
@@ -340,7 +300,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: _statCard(
             icon: LucideIcons.flame,
             value: '${user.streak}',
-            label: 'Streak',
+            label: user.longestStreak > user.streak
+                ? context
+                    .t('profile_streak_record')
+                    .replaceFirst('%d', '${user.longestStreak}')
+                : context.t('profile_streak'),
             color: Colors.red,
           ),
         ),
@@ -398,7 +362,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const Icon(LucideIcons.barChart3,
                   color: AppColors.primary, size: 20),
               const SizedBox(width: 8),
-              Text('Thống kê game',
+              Text(context.t('profile_stats_title'),
                   style: AppText.subtitle.copyWith(fontSize: 16)),
             ],
           ),
@@ -409,19 +373,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Row(
               children: [
                 Expanded(
-                  child: _miniStat('Tổng', '${_stats?['total'] ?? 0}',
+                  child: _miniStat(context.t('profile_stat_total'),
+                      '${_stats?['total'] ?? 0}',
                       FontAwesomeIcons.gamepad, Colors.blue),
                 ),
                 Expanded(
-                  child: _miniStat('Nối từ', '${_stats?['matching'] ?? 0}',
+                  child: _miniStat(context.t('profile_stat_matching'),
+                      '${_stats?['matching'] ?? 0}',
                       FontAwesomeIcons.puzzlePiece, Colors.purple),
                 ),
                 Expanded(
-                  child: _miniStat('Quiz', '${_stats?['quiz'] ?? 0}',
+                  child: _miniStat(context.t('profile_stat_quiz'),
+                      '${_stats?['quiz'] ?? 0}',
                       FontAwesomeIcons.circleQuestion, Colors.orange),
                 ),
                 Expanded(
-                  child: _miniStat('Xếp chữ', '${_stats?['word_puzzle'] ?? 0}',
+                  child: _miniStat(context.t('profile_stat_puzzle'),
+                      '${_stats?['word_puzzle'] ?? 0}',
                       FontAwesomeIcons.spellCheck, Colors.pink),
                 ),
               ],
@@ -466,44 +434,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _menuTile(
             icon: LucideIcons.history,
             iconColor: Colors.blue,
-            title: 'Lịch sử chơi',
+            title: context.t('profile_menu_history'),
             onTap: () => Navigator.pushNamed(context, '/history'),
           ),
           const Divider(height: 1, indent: 62),
           _menuTile(
             icon: LucideIcons.trophy,
             iconColor: Colors.amber,
-            title: 'Bảng xếp hạng',
+            title: context.t('profile_menu_leaderboard'),
             onTap: () => Navigator.pushNamed(context, '/leaderboard'),
           ),
           const Divider(height: 1, indent: 62),
           _menuTile(
             icon: LucideIcons.settings,
             iconColor: Colors.grey,
-            title: 'Cài đặt',
+            title: context.t('profile_menu_settings'),
             onTap: () => Navigator.pushNamed(context, '/settings'),
           ),
           const Divider(height: 1, indent: 62),
           _menuTile(
             icon: LucideIcons.logOut,
             iconColor: Colors.red,
-            title: 'Đăng xuất',
+            title: context.t('profile_menu_logout'),
             onTap: () async {
               final confirmed = await showDialog<bool>(
                 context: context,
                 builder: (_) => AlertDialog(
-                  title: const Text('Đăng xuất?'),
-                  content: const Text('Bạn có chắc muốn đăng xuất không?'),
+                  title: Text(context.tr('profile_logout_confirm_title')),
+                  content: Text(context.tr('logout_confirm')),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context, false),
-                      child: const Text('Hủy'),
+                      child: Text(context.tr('cancel')),
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red),
                       onPressed: () => Navigator.pop(context, true),
-                      child: const Text('Đăng xuất'),
+                      child: Text(context.tr('logout')),
                     ),
                   ],
                 ),

@@ -10,6 +10,7 @@ import '../../models/user_model.dart';
 import '../../providers/user_provider.dart';
 import '../../services/firestore_service.dart';
 import '../../widgets/loading_widget.dart';
+import '../../widgets/user_avatar.dart';
 
 // Man hinh Xep hang - hien thi top nguoi choi
 class LeaderboardScreen extends StatefulWidget {
@@ -284,20 +285,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       children: [
         Icon(icon, color: color, size: 24),
         const SizedBox(height: 4),
-        CircleAvatar(
-          radius: rank == 1 ? 34 : 28,
-          backgroundColor: color,
-          child: CircleAvatar(
+        Container(
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+          child: UserAvatar(
+            avatarUrl: u.avatarUrl,
+            displayName: u.displayName,
             radius: rank == 1 ? 30 : 24,
-            backgroundColor: Colors.white,
-            child: Text(
-              u.displayName.isNotEmpty ? u.displayName[0].toUpperCase() : 'U',
-              style: TextStyle(
-                fontSize: rank == 1 ? 24 : 18,
-                fontWeight: FontWeight.w700,
-                color: color,
-              ),
-            ),
+            textColor: color,
           ),
         ),
         const SizedBox(height: 4),
@@ -378,16 +376,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             ),
           ),
           const SizedBox(width: 8),
-          CircleAvatar(
+          UserAvatar(
+            avatarUrl: u.avatarUrl,
+            displayName: u.displayName,
             radius: 22,
             backgroundColor: AppColors.primary.withValues(alpha: 0.15),
-            child: Text(
-              u.displayName.isNotEmpty ? u.displayName[0].toUpperCase() : 'U',
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-                color: AppColors.primary,
-              ),
-            ),
           ),
           const SizedBox(width: 12),
           Expanded(

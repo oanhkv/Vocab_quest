@@ -13,6 +13,7 @@ import '../../services/audio_service.dart';
 import '../../utils/app_localizations.dart';
 import '../../utils/helpers.dart';
 import '../../widgets/bubble_back_button.dart';
+import '../../widgets/user_avatar.dart';
 
 /// ⚙️ Màn hình Cài đặt - đầy đủ các tuỳ chọn
 class SettingsScreen extends StatelessWidget {
@@ -99,10 +100,8 @@ class SettingsScreen extends StatelessWidget {
                   title: _t(settings, 'notification_reminder'),
                   subtitle: _t(settings, 'notification_reminder_sub'),
                   value: settings.notificationEnabled,
-                  onChanged: (v) {
-                    _clickFeedback(settings);
-                    settings.toggleNotification(v);
-                  },
+                  onChanged: (v) =>
+                      _handleToggleNotification(context, settings, v),
                 ),
                 if (settings.notificationEnabled) ...[
                   const Divider(height: 1, indent: 72),
@@ -210,9 +209,27 @@ class SettingsScreen extends StatelessWidget {
     if (picked != null) {
       await settings.setReminderTime(picked);
       if (context.mounted) {
-        Helpers.showSuccess(
-            context, '${_t(settings, 'reminder_time')}: ${_formatTime(picked)}');
+        final msg = _t(settings, 'notification_scheduled')
+            .replaceFirst('%s', _formatTime(picked));
+        Helpers.showSuccess(context, msg);
       }
+    }
+  }
+
+  Future<void> _handleToggleNotification(
+      BuildContext context, SettingsProvider settings, bool value) async {
+    _clickFeedback(settings);
+    final ok = await settings.toggleNotification(value);
+    if (!context.mounted) return;
+    if (value && !ok) {
+      Helpers.showError(
+          context, _t(settings, 'notification_permission_denied'));
+    } else if (value && ok) {
+      final msg = _t(settings, 'notification_scheduled')
+          .replaceFirst('%s', _formatTime(settings.reminderTime));
+      Helpers.showSuccess(context, msg);
+    } else if (!value) {
+      Helpers.showSuccess(context, _t(settings, 'notification_cancelled'));
     }
   }
 
@@ -240,20 +257,10 @@ class SettingsScreen extends StatelessWidget {
           ),
           child: Row(
             children: [
-              CircleAvatar(
+              UserAvatar(
+                avatarUrl: user?.avatarUrl ?? '',
+                displayName: user?.displayName ?? '',
                 radius: 32,
-                backgroundColor: Colors.white,
-                child: Text(
-                  (user?.displayName.isNotEmpty == true
-                          ? user!.displayName[0]
-                          : 'U')
-                      .toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                  ),
-                ),
               ),
               const SizedBox(width: 16),
               Expanded(
