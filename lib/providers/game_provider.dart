@@ -3,6 +3,14 @@ import '../models/game_result_model.dart';
 import '../models/vocab_model.dart';
 import '../services/firestore_service.dart';
 import '../services/json_service.dart';
+import '../utils/streak_calculator.dart';
+
+/// Tổng kết sau khi chơi xong 1 game: kết quả game + streak update.
+class FinishGameOutcome {
+  final GameResultModel result;
+  final StreakOutcome streak;
+  const FinishGameOutcome({required this.result, required this.streak});
+}
 
 /// 🎮 Provider quản lý state game
 class GameProvider extends ChangeNotifier {
@@ -59,8 +67,8 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Lưu kết quả
-  Future<GameResultModel> finishGame({
+  /// Lưu kết quả + cập nhật streak atomic. Trả về outcome để UI hiển thị.
+  Future<FinishGameOutcome> finishGame({
     required String userId,
     required String userName,
     required String gameType,
@@ -92,10 +100,20 @@ class GameProvider extends ChangeNotifier {
       playedAt: DateTime.now(),
     );
 
-    // Lưu Firestore
-    await _firestoreService.saveGameResult(result);
+    // Lưu Firestore + tính streak. Nếu fail, vẫn return result để UI hiển thị
+    // (user không bị mất thành tích trên màn kết quả).
+    StreakOutcome streak = const StreakOutcome(
+      newStreak: 0,
+      newLongest: 0,
+      streakIncreased: false,
+    );
+    try {
+      streak = await _firestoreService.saveGameResult(result);
+    } catch (e) {
+      debugPrint('saveGameResult error: $e');
+    }
 
-    return result;
+    return FinishGameOutcome(result: result, streak: streak);
   }
 
   /// Tính thưởng

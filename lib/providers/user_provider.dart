@@ -1,14 +1,21 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../config/rewards.dart';
 import '../models/level_reward_model.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/firestore_service.dart';
+import '../utils/streak_calculator.dart';
 
 /// 👤 Provider quản lý state của user
 class UserProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
   final FirestoreService _firestoreService = FirestoreService();
+
+  /// Trần dung lượng avatar sau khi base64-encode (Firestore doc ≤ 1MB).
+  /// Giới hạn 500KB để chừa chỗ cho các field khác của user.
+  static const int _maxAvatarBytes = 500 * 1024;
 
   UserModel? _user;
   bool _isLoading = false;
@@ -100,6 +107,27 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Lưu avatar dạng base64 data URI vào Firestore.
+  /// Tránh phụ thuộc Firebase Storage (cần Blaze plan từ 10/2024).
+  ///
+  /// File avatar đã được image_picker resize về 400×400 JPEG quality 75
+  /// → thường ~25-50KB raw, ~35-70KB sau base64 encoding.
+  Future<String> updateAvatar(File file) async {
+    if (_user == null) throw 'Chưa đăng nhập';
+
+    final bytes = await file.readAsBytes();
+    if (bytes.length > _maxAvatarBytes) {
+      throw 'Ảnh quá lớn (${(bytes.length / 1024).round()}KB). '
+          'Chọn ảnh khác hoặc giảm độ phân giải.';
+    }
+
+    final dataUri = 'data:image/jpeg;base64,${base64Encode(bytes)}';
+    await _firestoreService.updateAvatarUrl(_user!.uid, dataUri);
+    _user = _user!.copyWith(avatarUrl: dataUri);
+    notifyListeners();
+    return dataUri;
+  }
+
   /// Cập nhật user local (sau khi chơi xong game)
   void updateLocalUser({
     int? addScore,
@@ -111,6 +139,18 @@ class UserProvider extends ChangeNotifier {
       totalScore: _user!.totalScore + (addScore ?? 0),
       totalCoins: _user!.totalCoins + (addCoins ?? 0),
       totalXP: _user!.totalXP + (addXP ?? 0),
+    );
+    notifyListeners();
+  }
+
+  /// Cập nhật streak local từ outcome trả về sau `finishGame`.
+  /// Gọi cùng với `updateLocalUser` để UI thấy streak mới ngay.
+  void applyStreakOutcome(StreakOutcome outcome) {
+    if (_user == null) return;
+    _user = _user!.copyWith(
+      streak: outcome.newStreak,
+      longestStreak: outcome.newLongest,
+      lastPlayedDate: DateTime.now(),
     );
     notifyListeners();
   }
