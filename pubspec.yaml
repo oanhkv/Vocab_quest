@@ -47,6 +47,13 @@ dependencies:
   intl: ^0.19.0
   uuid: ^4.2.1
 
+  # Thông báo học tập hàng ngày
+  flutter_local_notifications: ^17.2.4
+  timezone: ^0.9.4
+
+  # Chọn ảnh từ camera / thư viện để làm avatar
+  image_picker: ^1.0.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
