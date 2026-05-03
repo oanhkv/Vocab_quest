@@ -157,20 +157,22 @@ class _QuizGameState extends State<QuizGame> {
     final user = context.read<UserProvider>().user;
     if (user == null) return;
 
-    final result = await context.read<GameProvider>().finishGame(
+    final outcome = await context.read<GameProvider>().finishGame(
           userId: user.uid,
           userName: user.displayName,
           gameType: AppConstants.gameQuiz,
           level: widget.level,
         );
+    final result = outcome.result;
 
     if (!mounted) return;
     final userProv = context.read<UserProvider>();
     userProv.updateLocalUser(
       addScore: _score,
-      addCoins: result.coinsEarned,
-      addXP: result.xpEarned,
+      addCoins: result.coinsEarned + outcome.streak.bonusCoins,
+      addXP: result.xpEarned + outcome.streak.bonusXP,
     );
+    userProv.applyStreakOutcome(outcome.streak);
     LevelReward? reward;
     if (widget.packId != null &&
         widget.levelIndex != null &&
@@ -191,6 +193,7 @@ class _QuizGameState extends State<QuizGame> {
           levelReward: reward,
           packId: widget.packId,
           levelIndex: widget.levelIndex,
+          streakOutcome: outcome.streak,
         ),
       ),
     );

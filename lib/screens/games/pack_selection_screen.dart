@@ -411,4 +411,10 @@ class GameMeta {
     icon: FontAwesomeIcons.spellCheck,
     gradient: AppColors.gradientPink,
   );
+  static const memory = GameMeta(
+    type: 'memory',
+    title: 'Lật thẻ',
+    icon: FontAwesomeIcons.brain,
+    gradient: AppColors.gradientBlue,
+  );
 }

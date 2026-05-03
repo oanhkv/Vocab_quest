@@ -8,9 +8,28 @@ import '../../config/design_tokens.dart';
 import '../../config/theme.dart';
 import '../../models/game_result_model.dart';
 import '../../models/level_reward_model.dart';
+import '../../utils/streak_calculator.dart';
 import '../../widgets/custom_button.dart';
 import '../../services/pack_service.dart';
 import 'level_map_screen.dart';
+
+/// 🧠 Stats riêng cho Memory game — chỉ truyền khi gameType == memory.
+/// Khi có giá trị, `GameResultScreen` render layout dành riêng cho memory
+/// (3 game khác không truyền nên path cũ giữ nguyên).
+class MemoryStats {
+  final int pairsMatched; // Tổng cặp đã ghép
+  final int pairsTotal;   // Tổng cặp cần ghép
+  final int timeLeft;     // Giây còn lại khi kết thúc
+  final int totalTime;    // Tổng thời gian quy định
+  const MemoryStats({
+    required this.pairsMatched,
+    required this.pairsTotal,
+    required this.timeLeft,
+    required this.totalTime,
+  });
+
+  bool get isComplete => pairsMatched >= pairsTotal && pairsTotal > 0;
+}
 
 /// 🎉 Màn hình kết quả sau khi chơi xong - có hiệu ứng confetti
 class GameResultScreen extends StatefulWidget {
@@ -18,12 +37,18 @@ class GameResultScreen extends StatefulWidget {
   final LevelReward? levelReward; // có giá trị nếu vừa pass level lần đầu
   final String? packId; // nếu chơi trong pack
   final int? levelIndex; // level hiện tại (1-3)
+  final StreakOutcome? streakOutcome;
+  final MemoryStats? memoryStats; // chỉ memory truyền vào
+  final int? overrideStars; // chỉ memory: ghi đè cách tính sao
   const GameResultScreen({
     super.key,
     required this.result,
     this.levelReward,
     this.packId,
     this.levelIndex,
+    this.streakOutcome,
+    this.memoryStats,
+    this.overrideStars,
   });
 
   @override
@@ -34,13 +59,23 @@ class _GameResultScreenState extends State<GameResultScreen> {
   late ConfettiController _confetti;
   bool _loadingNext = false;
 
+  /// Sao thực tế hiển thị: ưu tiên `overrideStars` (memory), fallback `result.stars`.
+  int get _effectiveStars => widget.overrideStars ?? widget.result.stars;
+
+  /// Có dùng layout riêng cho memory hay không.
+  bool get _isMemoryLayout =>
+      widget.memoryStats != null && widget.result.gameType == 'memory';
+
   @override
   void initState() {
     super.initState();
     _confetti = ConfettiController(duration: const Duration(seconds: 3));
 
-    // Chỉ bắn confetti nếu thắng (>= 2 sao) hoặc vừa unlock level mới
-    if (widget.result.stars >= 2 || widget.levelReward != null) {
+    // Bắn confetti nếu thắng (>= 2 sao), unlock level mới, hoặc đạt mốc streak
+    final streakMilestone = widget.streakOutcome?.milestoneHit != null;
+    if (_effectiveStars >= 2 ||
+        widget.levelReward != null ||
+        streakMilestone) {
       _confetti.play();
     }
   }
@@ -54,17 +89,23 @@ class _GameResultScreenState extends State<GameResultScreen> {
   @override
   Widget build(BuildContext context) {
     final r = widget.result;
-    final isGood = r.stars >= 2;
+    final stars = _effectiveStars;
+    final isGood = stars >= 2;
     final canPlayNext = widget.packId != null &&
         widget.levelIndex != null &&
         isGood &&
         (widget.levelIndex! < PackService.levelsPerPack);
 
+    // Memory dùng gradient xanh (theme thẻ); 3 game khác giữ tím/dark.
+    final List<Color> bgGradient = _isMemoryLayout
+        ? (isGood ? AppColors.gradientBlue : AppColors.gradientDark)
+        : (isGood ? AppColors.gradientPurple : AppColors.gradientDark);
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: isGood ? AppColors.gradientPurple : AppColors.gradientDark,
+            colors: bgGradient,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -100,11 +141,13 @@ class _GameResultScreenState extends State<GameResultScreen> {
                     const SizedBox(height: 40),
 
                     // Icon + text
-                    _buildHeader(r),
+                    _isMemoryLayout
+                        ? _buildMemoryHeader(r, stars)
+                        : _buildHeader(r),
                     const SizedBox(height: 24),
 
                     // Sao
-                    _buildStars(r.stars),
+                    _buildStars(stars),
                     const SizedBox(height: 24),
 
                     // Banner thưởng mở khoá level (nếu có)
@@ -115,12 +158,23 @@ class _GameResultScreenState extends State<GameResultScreen> {
                       const SizedBox(height: 8),
 
                     // Các card thông tin
-                    _buildStatsCard(r),
+                    _isMemoryLayout
+                        ? _buildMemoryStatsCard(r, widget.memoryStats!)
+                        : _buildStatsCard(r),
                     const SizedBox(height: 20),
 
                     // Rewards
                     _buildRewardsCard(r),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 20),
+
+                    // Streak (nếu có thông tin từ outcome)
+                    if (widget.streakOutcome != null &&
+                        widget.streakOutcome!.newStreak > 0) ...[
+                      _buildStreakCard(widget.streakOutcome!),
+                      const SizedBox(height: 20),
+                    ],
+
+                    const SizedBox(height: 12),
 
                     // Buttons
                     _buildActionButtons(canPlayNext: canPlayNext),
@@ -187,6 +241,171 @@ class _GameResultScreenState extends State<GameResultScreen> {
               fontSize: 12,
             ),
           ),
+        ),
+      ],
+    );
+  }
+
+  /// Header riêng cho Memory: tiêu đề thân thiện hơn, có badge "Hoàn hảo!"
+  /// nếu first-attempt 100%, hoặc "Hoàn thành!" nếu ghép xong nhưng có lỗi.
+  Widget _buildMemoryHeader(GameResultModel r, int stars) {
+    final ms = widget.memoryStats!;
+    final String title;
+    final IconData icon;
+    switch (stars) {
+      case 3:
+        title = 'Trí nhớ siêu đỉnh!';
+        icon = FontAwesomeIcons.brain;
+        break;
+      case 2:
+        title = 'Ghép giỏi lắm!';
+        icon = FontAwesomeIcons.medal;
+        break;
+      case 1:
+        title = 'Cố thêm chút nhé!';
+        icon = FontAwesomeIcons.handSparkles;
+        break;
+      default:
+        title = 'Thử lại nào!';
+        icon = FontAwesomeIcons.faceSadTear;
+    }
+
+    final String? badge = ms.isComplete ? '✅ Hoàn thành' : null;
+
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.2),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: Colors.white, size: 64),
+        ).animate().scale(duration: 600.ms, curve: Curves.elasticOut),
+        const SizedBox(height: AppSpacing.md),
+        Text(
+          title,
+          style: AppText.display.copyWith(
+            color: Colors.white,
+            fontSize: 32,
+          ),
+          textAlign: TextAlign.center,
+        ).animate().fadeIn(delay: 300.ms),
+        const SizedBox(height: 6),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(AppRadius.pill),
+          ),
+          child: Text(
+            'Lật thẻ · ${r.levelDisplay}',
+            style: AppText.caption.copyWith(
+              color: Colors.white.withValues(alpha: 0.95),
+              fontSize: 12,
+            ),
+          ),
+        ),
+        if (badge != null) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.amber.withValues(alpha: 0.95),
+              borderRadius: BorderRadius.circular(AppRadius.pill),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.amber.withValues(alpha: 0.5),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Text(
+              badge,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.4,
+              ),
+            ),
+          ).animate(delay: 600.ms).fadeIn().scale(
+                begin: const Offset(0.7, 0.7),
+                end: const Offset(1, 1),
+                curve: Curves.elasticOut,
+                duration: 500.ms,
+              ),
+        ],
+      ],
+    );
+  }
+
+  /// Stats card riêng cho Memory: chỉ hiển thị Điểm số và Thời gian còn lại.
+  /// (Sao đã hiển thị riêng phía trên; các metric "câu đúng / accuracy"
+  /// không hợp với game ghép thẻ nên đã bỏ.)
+  Widget _buildMemoryStatsCard(GameResultModel r, MemoryStats ms) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        boxShadow: AppShadow.card,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildBigStat(
+              icon: LucideIcons.trophy,
+              label: 'Điểm số',
+              value: '${r.score}',
+              color: Colors.orange,
+            ),
+          ),
+          Container(width: 1, height: 80, color: Colors.grey.shade200),
+          Expanded(
+            child: _buildBigStat(
+              icon: LucideIcons.timer,
+              label: 'Thời gian còn',
+              value: '${ms.timeLeft}s',
+              color: Colors.purple,
+            ),
+          ),
+        ],
+      ),
+    ).animate(delay: 800.ms).fadeIn().slideY(begin: 0.2, end: 0);
+  }
+
+  Widget _buildBigStat({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: color, size: 30),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          value,
+          style: AppText.stat.copyWith(
+            fontSize: 32,
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: AppText.caption.copyWith(fontSize: 13),
         ),
       ],
     );
@@ -312,6 +531,124 @@ class _GameResultScreenState extends State<GameResultScreen> {
       height: 60,
       color: Colors.grey.shade200,
     );
+  }
+
+  /// Card hiển thị streak — có 2 state:
+  /// - Milestone hit: banner cam-vàng lớn + bonus coin/XP
+  /// - Streak tăng thường: chip nhỏ "+1 ngày, giữ đà!"
+  Widget _buildStreakCard(StreakOutcome s) {
+    final isMilestone = s.milestoneHit != null;
+
+    if (isMilestone) {
+      return Container(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFFF6A00), Color(0xFFFF3D71)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          boxShadow: AppShadow.colored(const Color(0xFFFF6A00)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.22),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(LucideIcons.flame,
+                  color: Colors.white, size: 32),
+            )
+                .animate(onPlay: (c) => c.repeat(reverse: true))
+                .scale(
+                  begin: const Offset(1, 1),
+                  end: const Offset(1.15, 1.15),
+                  duration: 700.ms,
+                  curve: Curves.easeInOut,
+                ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '🔥 Streak ${s.milestoneHit} ngày!',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Bonus: +${s.bonusCoins} coin, +${s.bonusXP} XP',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ).animate().fadeIn(delay: 1000.ms).slideY(begin: 0.2, end: 0);
+    }
+
+    final subtitle = s.streakIncreased
+        ? 'Giỏi lắm! Giữ đà học mỗi ngày nhé 🚀'
+        : 'Bạn đã học hôm nay — quay lại mai để streak tăng!';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        boxShadow: AppShadow.card,
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: const BoxDecoration(
+              color: Color(0xFFFFF1E6),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(LucideIcons.flame,
+                color: Color(0xFFFF6A00), size: 22),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Streak: ${s.newStreak} ngày',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(delay: 900.ms);
   }
 
   Widget _buildRewardsCard(GameResultModel r) {
@@ -525,6 +862,8 @@ class _GameResultScreenState extends State<GameResultScreen> {
         return AppColors.gradientPurple;
       case 'quiz':
         return AppColors.gradientOrange;
+      case 'memory':
+        return AppColors.gradientBlue;
       case 'word_puzzle':
       default:
         return AppColors.gradientPink;
@@ -537,6 +876,8 @@ class _GameResultScreenState extends State<GameResultScreen> {
         return 'Nối từ';
       case 'quiz':
         return 'Trắc nghiệm';
+      case 'memory':
+        return 'Lật thẻ';
       case 'word_puzzle':
       default:
         return 'Xếp chữ';

@@ -42,7 +42,12 @@ class _MatchingGameState extends State<MatchingGame> {
   VocabModel? _selectedWord;
   VocabModel? _selectedMeaning;
   final Set<String> _matched = {};
-  Set<String> _wrongIds = {}; // cặp vừa nối sai — hiển thị đỏ
+  // Pair đã "fail" — tính theo meaning user click sai. Pair failed sẽ
+  // không được tính correct/score nữa kể cả sau khi retry đúng.
+  final Set<String> _failedPairIds = {};
+  // Tách theo cột để KHÔNG làm đỏ lầm ô cùng id ở cột đối diện.
+  String? _wrongWordId;
+  String? _wrongMeaningId;
   int _score = 0;
   int _round = 1;
   int _totalRounds = 3;
@@ -65,7 +70,10 @@ class _MatchingGameState extends State<MatchingGame> {
       _pool = _dedupeWords(loaded);
     }
     _remainingPool = List<VocabModel>.from(_pool)..shuffle(Random());
-    final maxNoRepeatRounds = _pool.length ~/ AppConstants.matchingGamePairs;
+    // Không lặp từ giữa các rounds trong cùng 1 game.
+    // Số round tối đa = số nhóm 4 cặp mà pool có thể cung cấp.
+    final maxNoRepeatRounds =
+        _pool.length ~/ AppConstants.matchingGamePairs;
     _totalRounds = maxNoRepeatRounds.clamp(1, 3);
     _setupRound();
     if (!mounted) return;
@@ -89,9 +97,7 @@ class _MatchingGameState extends State<MatchingGame> {
   }
 
   void _setupRound() {
-    if (_remainingPool.length < AppConstants.matchingGamePairs) {
-      _remainingPool = List<VocabModel>.from(_pool)..shuffle(Random());
-    }
+    // Không recycle — _totalRounds đã được tính để không đòi nhiều hơn pool.
     final takeCount = _remainingPool.length >= AppConstants.matchingGamePairs
         ? AppConstants.matchingGamePairs
         : _remainingPool.length;
@@ -102,9 +108,11 @@ class _MatchingGameState extends State<MatchingGame> {
       _words = pairs;
       _shuffledMeanings = meanings;
       _matched.clear();
+      _failedPairIds.clear();
       _selectedWord = null;
       _selectedMeaning = null;
-      _wrongIds = {};
+      _wrongWordId = null;
+      _wrongMeaningId = null;
     });
   }
 
@@ -133,37 +141,49 @@ class _MatchingGameState extends State<MatchingGame> {
 
   void _checkMatch() {
     if (_selectedWord != null && _selectedMeaning != null) {
-      if (_selectedWord!.id == _selectedMeaning!.id) {
-        // Nối đúng
+      final wId = _selectedWord!.id;
+      final mId = _selectedMeaning!.id;
+      final gp = context.read<GameProvider>();
+
+      if (wId == mId) {
+        // Nối đúng — chỉ tính điểm + correct nếu pair này CHƯA bị fail.
+        final notFailed = !_failedPairIds.contains(wId);
         setState(() {
-          _matched.add(_selectedWord!.id);
-          _score += 10;
+          _matched.add(wId);
+          if (notFailed) _score += 10;
           _selectedWord = null;
           _selectedMeaning = null;
         });
-        context.read<GameProvider>()
-          ..addCorrect()
-          ..addScore(10);
+        if (notFailed) {
+          gp
+            ..addCorrect()
+            ..addScore(10);
+        }
         AudioService.instance.playCorrect();
 
         if (_matched.length == _words.length) {
           _nextRound();
         }
       } else {
-        // Nối sai — hiện đỏ 2 ô 600ms rồi reset
-        context.read<GameProvider>().addWrong();
+        // Nối sai — đánh dấu pair của MEANING là failed (nếu chưa).
+        // Đỏ CẢ 2 ô (word + meaning) trong 600ms.
+        final firstFail = !_failedPairIds.contains(mId);
+        if (firstFail) {
+          _failedPairIds.add(mId);
+          gp.addWrong();
+        }
         AudioService.instance.playWrong();
-        final wrongWordId = _selectedWord!.id;
-        final wrongMeaningId = _selectedMeaning!.id;
         setState(() {
-          _wrongIds = {wrongWordId, wrongMeaningId};
+          _wrongWordId = wId;
+          _wrongMeaningId = mId;
         });
         Future.delayed(const Duration(milliseconds: 600), () {
           if (!mounted) return;
           setState(() {
             _selectedWord = null;
             _selectedMeaning = null;
-            _wrongIds = {};
+            _wrongWordId = null;
+            _wrongMeaningId = null;
           });
         });
       }
@@ -186,20 +206,22 @@ class _MatchingGameState extends State<MatchingGame> {
     final user = context.read<UserProvider>().user;
     if (user == null) return;
 
-    final result = await context.read<GameProvider>().finishGame(
+    final outcome = await context.read<GameProvider>().finishGame(
           userId: user.uid,
           userName: user.displayName,
           gameType: AppConstants.gameMatching,
           level: widget.level,
         );
+    final result = outcome.result;
 
     if (!mounted) return;
     final userProv = context.read<UserProvider>();
     userProv.updateLocalUser(
       addScore: _score,
-      addCoins: result.coinsEarned,
-      addXP: result.xpEarned,
+      addCoins: result.coinsEarned + outcome.streak.bonusCoins,
+      addXP: result.xpEarned + outcome.streak.bonusXP,
     );
+    userProv.applyStreakOutcome(outcome.streak);
     LevelReward? reward;
     if (widget.packId != null &&
         widget.levelIndex != null &&
@@ -220,6 +242,7 @@ class _MatchingGameState extends State<MatchingGame> {
           levelReward: reward,
           packId: widget.packId,
           levelIndex: widget.levelIndex,
+          streakOutcome: outcome.streak,
         ),
       ),
     );
@@ -239,12 +262,19 @@ class _MatchingGameState extends State<MatchingGame> {
       );
     }
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildTopBar(),
-            const SizedBox(height: 16),
+    // PopScope chặn back gesture — buộc user confirm qua dialog.
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        _confirmExit();
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildTopBar(),
+              const SizedBox(height: 16),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -257,8 +287,9 @@ class _MatchingGameState extends State<MatchingGame> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-          ],
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
@@ -335,7 +366,7 @@ class _MatchingGameState extends State<MatchingGame> {
       children: _words.map((v) {
         final isMatched = _matched.contains(v.id);
         final isSelected = _selectedWord?.id == v.id;
-        final isWrong = _wrongIds.contains(v.id);
+        final isWrong = _wrongWordId == v.id;
         return Expanded(
           child: Padding(
             padding: const EdgeInsets.only(bottom: 8),
@@ -376,7 +407,7 @@ class _MatchingGameState extends State<MatchingGame> {
       children: _shuffledMeanings.map((v) {
         final isMatched = _matched.contains(v.id);
         final isSelected = _selectedMeaning?.id == v.id;
-        final isWrong = _wrongIds.contains(v.id);
+        final isWrong = _wrongMeaningId == v.id;
         return Expanded(
           child: Padding(
             padding: const EdgeInsets.only(bottom: 8),

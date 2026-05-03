@@ -12,6 +12,7 @@ import '../../services/pack_service.dart';
 import '../../utils/helpers.dart';
 import '../../widgets/loading_widget.dart';
 import 'matching_game.dart';
+import 'memory_game.dart';
 import 'quiz_game.dart';
 import 'word_puzzle_game.dart';
 
@@ -273,6 +274,14 @@ class _LevelMapScreenState extends State<LevelMapScreen> {
         break;
       case 'quiz':
         game = QuizGame(
+          level: widget.pack.level,
+          words: words,
+          packId: widget.pack.id,
+          levelIndex: meta.index,
+        );
+        break;
+      case 'memory':
+        game = MemoryGame(
           level: widget.pack.level,
           words: words,
           packId: widget.pack.id,
