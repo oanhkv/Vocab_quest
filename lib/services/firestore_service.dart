@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../config/constants.dart';
 import '../models/game_result_model.dart';
 import '../models/user_model.dart';
+import '../utils/streak_calculator.dart';
 
 /// 🔥 Service xử lý Firestore
 class FirestoreService {
@@ -40,6 +41,11 @@ class FirestoreService {
   /// Cập nhật thông tin hiển thị
   Future<void> updateDisplayName(String uid, String displayName) async {
     await updateUser(uid, {'displayName': displayName});
+  }
+
+  /// Cập nhật URL avatar
+  Future<void> updateAvatarUrl(String uid, String url) async {
+    await updateUser(uid, {'avatarUrl': url});
   }
 
   /// Cập nhật tiến độ level + thưởng (chỉ ghi nếu level mới cao hơn hiện tại).
@@ -120,22 +126,54 @@ class FirestoreService {
 
   // ============ GAME RESULT ============
 
-  /// Lưu kết quả game
-  Future<void> saveGameResult(GameResultModel result) async {
-    // Lưu vào collection game_results
-    await _db
-        .collection(AppConstants.gameResultsCollection)
-        .add(result.toMap());
+  /// Lưu kết quả game atomic: thêm doc `game_results`, cập nhật điểm/coin/XP
+  /// của user, và tính streak mới + milestone reward.
+  ///
+  /// Trả về [StreakOutcome] để UI có thể hiển thị celebration nếu đạt mốc.
+  Future<StreakOutcome> saveGameResult(GameResultModel result) async {
+    final userRef =
+        _db.collection(AppConstants.usersCollection).doc(result.userId);
+    final gameRef = _db.collection(AppConstants.gameResultsCollection).doc();
+    final now = DateTime.now();
 
-    // Cập nhật tổng điểm, coin, XP của user
-    await _db
-        .collection(AppConstants.usersCollection)
-        .doc(result.userId)
-        .update({
-      'totalScore': FieldValue.increment(result.score),
-      'totalCoins': FieldValue.increment(result.coinsEarned),
-      'totalXP': FieldValue.increment(result.xpEarned),
-      'lastPlayedDate': Timestamp.fromDate(DateTime.now()),
+    return _db.runTransaction<StreakOutcome>((txn) async {
+      final snap = await txn.get(userRef);
+      if (!snap.exists) {
+        // Fallback: không có user doc — vẫn ghi game result nhưng không update user.
+        txn.set(gameRef, result.toMap());
+        return const StreakOutcome(
+          newStreak: 0,
+          newLongest: 0,
+          streakIncreased: false,
+        );
+      }
+
+      final data = Map<String, dynamic>.from(snap.data() as Map);
+      final currentStreak = (data['streak'] as num?)?.toInt() ?? 0;
+      final longestStreak = (data['longestStreak'] as num?)?.toInt() ?? 0;
+      final rawLast = data['lastPlayedDate'];
+      final lastPlayed = rawLast is Timestamp ? rawLast.toDate() : null;
+
+      final streakUpdate = computeStreakUpdate(
+        lastPlayed: lastPlayed,
+        now: now,
+        currentStreak: currentStreak,
+        longestStreak: longestStreak,
+      );
+
+      txn.set(gameRef, result.toMap());
+      txn.update(userRef, {
+        'totalScore': FieldValue.increment(result.score),
+        'totalCoins':
+            FieldValue.increment(result.coinsEarned + streakUpdate.bonusCoins),
+        'totalXP':
+            FieldValue.increment(result.xpEarned + streakUpdate.bonusXP),
+        'streak': streakUpdate.newStreak,
+        'longestStreak': streakUpdate.newLongest,
+        'lastPlayedDate': Timestamp.fromDate(now),
+      });
+
+      return streakUpdate;
     });
   }
 
@@ -377,6 +415,7 @@ class FirestoreService {
       'matching': 0,
       'quiz': 0,
       'word_puzzle': 0,
+      'memory': 0,
       'total': 0,
     };
 

@@ -9,11 +9,19 @@ class StorageService {
   /// Upload ảnh avatar người dùng
   Future<String> uploadAvatar(String uid, File file) async {
     try {
+      debugPrint('🔼 [Storage] uploadAvatar start: uid=$uid path=${file.path}');
       final ref = _storage.ref().child('avatars/$uid.jpg');
-      final uploadTask = await ref.putFile(file);
-      return await uploadTask.ref.getDownloadURL();
-    } catch (e) {
-      throw 'Lỗi upload avatar: $e';
+      // Timeout 30s để không treo UI vô hạn nếu Storage chưa enable
+      // hoặc rules chưa deploy.
+      final snap = await ref
+          .putFile(file)
+          .timeout(const Duration(seconds: 30));
+      final url = await snap.ref.getDownloadURL();
+      debugPrint('✅ [Storage] uploadAvatar done: $url');
+      return url;
+    } catch (e, st) {
+      debugPrint('❌ [Storage] uploadAvatar error: $e\n$st');
+      rethrow;
     }
   }
 

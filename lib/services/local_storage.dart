@@ -97,6 +97,17 @@ class LocalStorage {
     await prefs.setInt(AppConstants.keyUserRating, value);
   }
 
+  // Favorite games (list gameType IDs)
+  static Future<List<String>> getFavoriteGames() async {
+    final prefs = await _instance;
+    return prefs.getStringList(AppConstants.keyFavoriteGames) ?? [];
+  }
+
+  static Future<void> setFavoriteGames(List<String> ids) async {
+    final prefs = await _instance;
+    await prefs.setStringList(AppConstants.keyFavoriteGames, ids);
+  }
+
   // First time
   static Future<bool> getIsFirstTime() async {
     final prefs = await _instance;
