@@ -1,53 +1,38 @@
-@'
 rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
+service firebase.storage {
+  match /b/{bucket}/o {
 
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
     }
 
-    match /users/{userId} {
+    function isUnder(maxBytes) {
+      return request.resource.size < maxBytes;
+    }
+
+    // Avatar người dùng: file đặt tại avatars/{uid}.jpg.
+    // Chỉ chủ tài khoản được ghi; ai đăng nhập cũng đọc được.
+    match /avatars/{fileName} {
       allow read: if isAuthenticated();
-      allow create, update: if isOwner(userId);
-      allow delete: if false;
+      allow write: if isAuthenticated()
+                   && fileName.matches(request.auth.uid + '\\.(jpg|jpeg|png|webp)')
+                   && isImage()
+                   && isUnder(5 * 1024 * 1024);
     }
 
-    match /game_results/{resultId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated() &&
-                       request.resource.data.userId == request.auth.uid;
-      allow update, delete: if false;
-    }
-
-    match /user_settings/{userId} {
-      allow read, write: if isOwner(userId);
-    }
-
-    match /vocabularies/{vocabId} {
+    // Ảnh từ vựng: ai đăng nhập đọc được, chỉ admin ghi (qua console/Admin SDK)
+    match /vocab_images/{allPaths=**} {
       allow read: if isAuthenticated();
       allow write: if false;
     }
 
-    match /achievements/{achievementId} {
-      allow read: if isAuthenticated();
-      allow write: if false;
-    }
-
-    match /user_achievements/{autoId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated() &&
-                       request.resource.data.userId == request.auth.uid;
-      allow update, delete: if false;
-    }
-
-    match /{document=**} {
+    // Chặn mọi path khác
+    match /{allPaths=**} {
       allow read, write: if false;
     }
   }
 }
-'@ | Out-File -FilePath "firestore.rules" -Encoding UTF8
