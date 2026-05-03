@@ -20,11 +20,13 @@ class AppConstants {
   static const String keyReminderMinute = 'reminderMinute';
   static const String keyUserRating = 'userRating';
   static const String keyIsFirstTime = 'isFirstTime';
+  static const String keyFavoriteGames = 'favoriteGames';
 
   // Game types
   static const String gameMatching = 'matching';
   static const String gameQuiz = 'quiz';
   static const String gameWordPuzzle = 'word_puzzle';
+  static const String gameMemory = 'memory';
 
   // Levels
   static const String levelBeginner = 'beginner';

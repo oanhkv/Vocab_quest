@@ -8,7 +8,9 @@ import 'config/theme.dart';
 import 'providers/user_provider.dart';
 import 'providers/settings_provider.dart';
 import 'providers/game_provider.dart';
+import 'providers/favorites_provider.dart';
 import 'services/audio_service.dart';
+import 'services/notification_service.dart';
 
 import 'screens/splash_screen.dart';
 import 'screens/auth/login_screen.dart';
@@ -20,6 +22,7 @@ import 'screens/leaderboard/leaderboard_screen.dart';
 import 'screens/profile/profile_screen.dart';
 import 'screens/settings/settings_screen.dart';
 import 'screens/shop/shop_screen.dart';
+import 'screens/favorites/favorites_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +52,14 @@ Future<void> main() async {
     // audio init fail — app vẫn chạy bình thường, chỉ không có âm thanh
   }
 
+  // Khởi tạo notification plugin + timezone (không xin quyền ở đây —
+  // chỉ xin khi user chủ động bật switch trong Cài đặt).
+  try {
+    await NotificationService.instance.init();
+  } catch (_) {
+    // notification init fail — app vẫn chạy, chỉ không có nhắc nhở
+  }
+
   runApp(const VocabQuestApp());
 }
 
@@ -67,6 +78,9 @@ class VocabQuestApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<GameProvider>(
           create: (_) => GameProvider(),
+        ),
+        ChangeNotifierProvider<FavoritesProvider>(
+          create: (_) => FavoritesProvider()..load(),
         ),
       ],
       child: Consumer<SettingsProvider>(
@@ -90,6 +104,7 @@ class VocabQuestApp extends StatelessWidget {
               '/profile': (_) => const ProfileScreen(),
               '/settings': (_) => const SettingsScreen(),
               '/shop': (_) => const ShopScreen(),
+              '/favorites': (_) => const FavoritesScreen(),
             },
           );
         },
